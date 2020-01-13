@@ -1,0 +1,2510 @@
+swagger: '2.0'
+info:
+  description: 'DHL eCommerce Solutions (DHLeCS) [API services](https://api-bat.dhlecs.com/docs) are used to create, manifest, and track packages for domestic and international destinations.'
+  version: 4.0.0
+  title: DHL eCommerce Solutions API Services
+  termsOfService: ''
+  contact:
+    name:  DHLeCS API Support
+    email: eCS.AM.IT.APISupport@dhl.com
+externalDocs:
+  description: Find out more about DHLeCS
+  url: 'https://www.logistics.dhl/us-en/home/our-divisions/ecommerce.html'
+host: api-bat.dhlecs.com
+basePath: /
+schemes:
+  - https
+securityDefinitions:
+  oAuthSecurity:
+    type: oauth2
+    description: OAuth2 secured area for tokens from Apigee.
+    flow: application
+    tokenUrl: https://api-bat.dhlecs.com/auth/v4/accesstoken
+security:
+  - oAuthSecurity: []
+tags: 
+  - name: label 
+    description: Create and retrieve labels
+  - name: manifest 
+    description: Create and retrieve manifests
+  - name: tracking 
+    description: track packages within the DHLeCS network
+paths:  
+  '/shipping/v4/label':
+    post:
+      tags:
+        - label
+      summary: Create a label
+      description: 'Create domestic and international labels in multiple formats: [ Label Services ](https://api-bat.dhlecs.com/docs/label)'
+      operationId: createLabel
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: format
+          type: string
+          required: true
+          description: png will return a base64 encoded string containing a label image. zpl will return a zpl formatted string in plain text
+          enum:
+            - zpl
+            - png
+        - in: body
+          name: body
+          description: Request Body
+          required: true
+          schema:
+            $ref: '#/definitions/labelRequest'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/labelResponse'
+        '400':
+          description: Invalid input
+  '/shipping/v4/label/{pickup}':
+    get:
+      tags:
+        - label
+      summary: Get a label
+      description: 'Retrieve a previously created label: [ Label Services ](https://api-bat.dhlecs.com/docs/label)'
+      operationId: getLabel
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: pickup
+          type: string
+          required: true
+          description: DHLeCS pickup account number. You will receive this after doing the onboarding with DHL sales
+          minLength: 1
+          maxLength: 10
+        - in: query
+          name: packageId
+          type: string
+          required: false
+          description: Customer-provided package identifier.  Also known as customer confirmation number.
+          minLength: 1
+          maxLength: 30
+        - in: query
+          name: dhlPackageId
+          type: string
+          required: false
+          description: DHLeCS package identifier.  Also known as the mail identifier.
+          minLength: 1
+          maxLength: 30
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/labelResponse'
+        '400':
+          description: Invalid input
+  '/shipping/v4/manifest':
+    post:
+      tags:
+        - manifest
+      summary: Create a manifest
+      description: 'Manifest selected packages or all packages: [ Manifest Services ](https://api-bat.dhlecs.com/docs/manifest)'
+      operationId: createManifest
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Request Body
+          required: true
+          schema:
+            $ref: '#/definitions/manifestRequest'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/manifestPostResponse'
+        '400':
+          description: Invalid input
+  '/shipping/v4/manifest/{pickup}/{requestId}':
+    get:
+      tags:
+        - manifest
+      summary: Get a manifest document
+      description: 'Retrieve manifest document(s) that can be handed over at the time of pickup or drop-off: [ Manifest Services ](https://api-bat.dhlecs.com/docs/manifest)'
+      operationId: getManifest
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: pickup
+          type: string
+          required: true
+          description: The DHLeCS pickup account number. You will receive this after doing the onboarding with DHL sales
+          minLength: 1
+          maxLength: 10
+        - in: path
+          name: requestId
+          type: string
+          required: true
+          description: The DHLeCS manifest request ID that was provided in the POST manifest response object
+          minLength: 1
+          maxLength: 30
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/manifestGetResponse'
+        '400':
+          description: Invalid input
+  '/tracking/v4/package':
+    get:
+      tags:
+        - tracking
+      summary: Get tracking data for a package
+      description: 'Get tracking data for a package: [ Tracking Services ](https://api-bat.dhlecs.com/docs/tracking)'
+      operationId: getPackage
+      produces:
+        - application/json
+      parameters:
+        - in: query
+          name: packageId
+          type: string
+          description: Customer-provided package identifier.  Also known as customer confirmation number. May be a comma-separated list of up to 10 Id's.
+        - in: query
+          name: dhlPackageId
+          type: string
+          description: DHLeCS package identifier.  Also known as the mail identifier. May be a comma-separated list of up to 10 Id's.
+        - in: query
+          name: trackingId
+          type: string
+          description: Last mile delivery partner package identifier.  Also known as the delivery confirmation number. May be a comma-separated list of up to 10 Id's.
+        - in: query
+          name: pickup
+          type: string
+          description: 'The DHLeCS pickup account number. If pickup is provided, either startDate and endDate should be provided OR one of the package IDs need to be provided.'
+        - in: query
+          name: startDate
+          type: string
+          description: Format should be YYYY-MM-DD. Timezone is in ET.
+        - in: query
+          name: endDate
+          type: string
+          description: Must be within 7 days of startDate. Format should be YYYY-MM-DD. Timezone is in ET.
+        - in: query
+          name: dateType
+          type: string
+          description: Type of date attribute to use in filter.  RECEIVEDATE will be used if not provided.
+          enum:
+            - RECEIVEDATE
+        - in: query
+          name: city
+          type: string
+          description: Recipient city associated with the package.
+        - in: query
+          name: state
+          type: string
+          description: Recipient state associated with the package.
+        - in: query
+          name: postalCode
+          type: string
+          description: Recipient postal code associated with the package.
+        - in: query
+          name: country
+          type: string
+          description: Recipient country associated with the package.
+        - in: query
+          name: orderedProductId
+          type: string
+          description: DHLeCS three-character product code. Please refer to our documentation site for a list valid values
+          enum:
+            - MAX
+            - EXP
+            - GND
+            - RLT
+            - RPL
+            - RGN
+            - BEX
+            - BGN
+            - PLT
+            - PLY
+            - PKY
+        - in: query
+          name: limit
+          type: integer
+          description: The numbers of packages to return.
+        - in: query
+          name: offset
+          type: integer
+          description: The number of packages to skip before starting to collect the result set.
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/trackingResponse'
+        '400':
+          description: Invalid input.
+definitions:
+  labelRequest:
+    type: object
+    additionalProperties: false
+    required:
+      - pickup
+      - package
+    properties:
+      pickup:
+        type: string
+        description: DHLeCS pickup account number. You will receive this after doing the onboarding with DHL sales
+        minLength: 1
+        maxLength: 10
+        pattern: '^[\S]+$'
+        example: "5320037"
+      package:
+        type: object
+        additionalProperties: false
+        required:
+          - orderedProductId
+          - distributionCenter
+          - consigneeAddress
+          - returnAddress
+          - packageDetail
+        properties:
+          distributionCenter:
+            type: string
+            description: Primary DHLeCS Distribution center assigned to your products/services
+            minLength: 1
+            maxLength: 6
+            pattern: '^[\S]+$'
+            example: "USRDU1"
+          merchantId:
+            type: string
+            description: Merchant account Id for the request
+            minLength: 0
+            maxLength: 30
+            example: null
+          orderedProductId:
+            type: string
+            description: DHLeCS three-character product code. Please refer to our documentation site for a list valid values
+            enum:
+              - MAX
+              - EXP
+              - GND
+              - BEX
+              - BGN
+              - PLT
+              - PLY
+              - PKY
+            example: "GND"
+          consigneeAddress:
+            type: object
+            additionalProperties: false
+            required:
+              - address1
+              - country
+              - city
+            properties:
+              name:
+                type: string
+                description: Name of consignee.
+                minLength: 0
+                maxLength: 30
+                pattern: '^$|.*[^\s].*'
+                example: 'test'                
+              companyName:
+                type: string
+                description: Company name of consignee.
+                minLength: 0
+                maxLength: 30
+                pattern: '^$|.*[^\s].*'
+                example: null                
+              address1:
+                type: string
+                description: Address line 1 of consignee.
+                minLength: 1
+                maxLength: 50
+                pattern: '^$|.*[^\s].*'
+                example: 'test'                
+              address2:
+                type: string
+                description: Address line 2 of consignee.
+                minLength: 0
+                maxLength: 50
+                example: null                
+              address3:
+                type: string
+                description: Address line 3 of consignee.
+                minLength: 0
+                maxLength: 30
+                example: null                
+              city:
+                type: string
+                description: City of consignee.
+                minLength: 1
+                maxLength: 30
+                pattern: '^$|.*[^\s].*'
+                example: 'test'                
+              state:
+                type: string
+                description: State of consignee.
+                minLength: 0
+                maxLength: 20
+                example: 'GA'                
+              country:
+                type: string
+                description: Two-character ISO consignee address country code.
+                minLength: 2
+                maxLength: 2
+                enum:
+                  - AD
+                  - AE
+                  - AF
+                  - AG
+                  - AI
+                  - AL
+                  - AM
+                  - AO
+                  - AR
+                  - AS
+                  - AT
+                  - AU
+                  - AW
+                  - AZ
+                  - BA
+                  - BB
+                  - BD
+                  - BE
+                  - BF
+                  - BG
+                  - BH
+                  - BI
+                  - BJ
+                  - BL
+                  - BM
+                  - BN
+                  - BO
+                  - BQ
+                  - BR
+                  - BS
+                  - BT
+                  - BW
+                  - BY
+                  - BZ
+                  - CA
+                  - CC
+                  - CD
+                  - CF
+                  - CG
+                  - CH
+                  - CI
+                  - CK
+                  - CL
+                  - CM
+                  - CN
+                  - CO
+                  - CR
+                  - CV
+                  - CW
+                  - CX
+                  - CY
+                  - CZ
+                  - DE
+                  - DJ
+                  - DK
+                  - DM
+                  - DO
+                  - DZ
+                  - EC
+                  - EE
+                  - EG
+                  - EH
+                  - ER
+                  - ES
+                  - ET
+                  - FI
+                  - FJ
+                  - FK
+                  - FM
+                  - FO
+                  - FR
+                  - GA
+                  - GB
+                  - GD
+                  - GE
+                  - GF
+                  - GG
+                  - GH
+                  - GI
+                  - GL
+                  - GM
+                  - GN
+                  - GP
+                  - GQ
+                  - GR
+                  - GS
+                  - GU
+                  - GW
+                  - GY
+                  - HK
+                  - HN
+                  - HR
+                  - HT
+                  - HU
+                  - ID
+                  - IE
+                  - IL
+                  - IM
+                  - IN
+                  - IO
+                  - IQ
+                  - IS
+                  - IT
+                  - JE
+                  - JM
+                  - JO
+                  - JP
+                  - KE
+                  - KG
+                  - KH
+                  - KI
+                  - KM
+                  - KN
+                  - KR
+                  - KW
+                  - KY
+                  - KZ
+                  - LA
+                  - LB
+                  - LC
+                  - LI
+                  - LK
+                  - LR
+                  - LS
+                  - LT
+                  - LU
+                  - LV
+                  - LY
+                  - MA
+                  - MC
+                  - MD
+                  - ME
+                  - MF
+                  - MG
+                  - MH
+                  - MK
+                  - ML
+                  - MM
+                  - MN
+                  - MO
+                  - MP
+                  - MQ
+                  - MR
+                  - MS
+                  - MT
+                  - MU
+                  - MV
+                  - MW
+                  - MX
+                  - MY
+                  - MZ
+                  - NA
+                  - NC
+                  - NE
+                  - NF
+                  - NG
+                  - NI
+                  - NL
+                  - 'NO'
+                  - NP
+                  - NR
+                  - NU
+                  - NZ
+                  - OM
+                  - PA
+                  - PE
+                  - PF
+                  - PG
+                  - PH
+                  - PK
+                  - PL
+                  - PM
+                  - PN
+                  - PR
+                  - PS
+                  - PT
+                  - PW
+                  - PY
+                  - QA
+                  - RE
+                  - RO
+                  - RS
+                  - RU
+                  - RW
+                  - SA
+                  - SB
+                  - SC
+                  - SE
+                  - SG
+                  - SH
+                  - SI
+                  - SJ
+                  - SK
+                  - SL
+                  - SM
+                  - SN
+                  - SR
+                  - SS
+                  - ST
+                  - SV
+                  - SX
+                  - SZ
+                  - TC
+                  - TD
+                  - TF
+                  - TG
+                  - TH
+                  - TJ
+                  - TK
+                  - TL
+                  - TM
+                  - TN
+                  - TO
+                  - TR
+                  - TT
+                  - TV
+                  - TW
+                  - TZ
+                  - UA
+                  - UG
+                  - UM
+                  - US
+                  - UY
+                  - UZ
+                  - VA
+                  - VC
+                  - VE
+                  - VG
+                  - VI
+                  - VN
+                  - VU
+                  - WF
+                  - WS
+                  - YE
+                  - YT
+                  - ZA
+                  - ZM
+                  - ZW
+                example: 'US'                  
+              postalCode:
+                type: string
+                description: Postal code of consignee.
+                minLength: 0
+                maxLength: 20
+                example: '30092'                
+              email:
+                type: string
+                description: E-mail address of consignee.
+                minLength: 0
+                maxLength: 100
+                example: null                
+              phone:
+                type: string
+                description: Phone number of consignee.
+                minLength: 0
+                maxLength: 20
+                example: null                
+              idNumber:
+                type: string
+                description: Identification number of consignee.
+                minLength: 0
+                maxLength: 30
+                example: null
+              idType:
+                type: integer
+                format: int32
+                description: Identification type of consignee. Please refer to our documentation site for a list valid values
+                minLength: 0
+                enum:
+                  - 1
+                  - 2
+                  - 3
+                  - 4
+                example: null
+          returnAddress:
+            type: object
+            additionalProperties: false
+            required:
+              - address1
+              - country
+              - city
+            properties:
+              name:
+                type: string
+                description: Name of person receiveing the returned package.
+                minLength: 0
+                maxLength: 30
+                pattern: '^$|.*[^\s].*'
+                example: 'test'                
+              companyName:
+                type: string
+                description: Company name receiveing the returned package.
+                minLength: 0
+                maxLength: 30
+                pattern: '^$|.*[^\s].*'
+                example: null                
+              address1:
+                type: string
+                description: Address line 1 of the return address.
+                minLength: 1
+                maxLength: 50
+                pattern: '^$|.*[^\s].*'
+                example: 'test'                
+              address2:
+                type: string
+                description: Address line 2 of the return address.
+                minLength: 0
+                maxLength: 50
+                example: null                
+              address3:
+                type: string
+                description: Address line 3 of the return address.
+                minLength: 0
+                maxLength: 30
+                example: null                
+              city:
+                type: string
+                description: City of the return address.
+                minLength: 1
+                maxLength: 30
+                pattern: '^$|.*[^\s].*'
+                example: 'test'                
+              state:
+                type: string
+                description: State of the return address.
+                minLength: 0
+                maxLength: 20
+                example: 'GA'                
+              country:
+                type: string
+                description: Two-character ISO return address country code.
+                minLength: 2
+                maxLength: 2
+                enum:
+                  - AD
+                  - AE
+                  - AF
+                  - AG
+                  - AI
+                  - AL
+                  - AM
+                  - AO
+                  - AR
+                  - AS
+                  - AT
+                  - AU
+                  - AW
+                  - AZ
+                  - BA
+                  - BB
+                  - BD
+                  - BE
+                  - BF
+                  - BG
+                  - BH
+                  - BI
+                  - BJ
+                  - BL
+                  - BM
+                  - BN
+                  - BO
+                  - BQ
+                  - BR
+                  - BS
+                  - BT
+                  - BW
+                  - BY
+                  - BZ
+                  - CA
+                  - CC
+                  - CD
+                  - CF
+                  - CG
+                  - CH
+                  - CI
+                  - CK
+                  - CL
+                  - CM
+                  - CN
+                  - CO
+                  - CR
+                  - CV
+                  - CW
+                  - CX
+                  - CY
+                  - CZ
+                  - DE
+                  - DJ
+                  - DK
+                  - DM
+                  - DO
+                  - DZ
+                  - EC
+                  - EE
+                  - EG
+                  - EH
+                  - ER
+                  - ES
+                  - ET
+                  - FI
+                  - FJ
+                  - FK
+                  - FM
+                  - FO
+                  - FR
+                  - GA
+                  - GB
+                  - GD
+                  - GE
+                  - GF
+                  - GG
+                  - GH
+                  - GI
+                  - GL
+                  - GM
+                  - GN
+                  - GP
+                  - GQ
+                  - GR
+                  - GS
+                  - GU
+                  - GW
+                  - GY
+                  - HK
+                  - HN
+                  - HR
+                  - HT
+                  - HU
+                  - ID
+                  - IE
+                  - IL
+                  - IM
+                  - IN
+                  - IO
+                  - IQ
+                  - IS
+                  - IT
+                  - JE
+                  - JM
+                  - JO
+                  - JP
+                  - KE
+                  - KG
+                  - KH
+                  - KI
+                  - KM
+                  - KN
+                  - KR
+                  - KW
+                  - KY
+                  - KZ
+                  - LA
+                  - LB
+                  - LC
+                  - LI
+                  - LK
+                  - LR
+                  - LS
+                  - LT
+                  - LU
+                  - LV
+                  - LY
+                  - MA
+                  - MC
+                  - MD
+                  - ME
+                  - MF
+                  - MG
+                  - MH
+                  - MK
+                  - ML
+                  - MM
+                  - MN
+                  - MO
+                  - MP
+                  - MQ
+                  - MR
+                  - MS
+                  - MT
+                  - MU
+                  - MV
+                  - MW
+                  - MX
+                  - MY
+                  - MZ
+                  - NA
+                  - NC
+                  - NE
+                  - NF
+                  - NG
+                  - NI
+                  - NL
+                  - 'NO'
+                  - NP
+                  - NR
+                  - NU
+                  - NZ
+                  - OM
+                  - PA
+                  - PE
+                  - PF
+                  - PG
+                  - PH
+                  - PK
+                  - PL
+                  - PM
+                  - PN
+                  - PR
+                  - PS
+                  - PT
+                  - PW
+                  - PY
+                  - QA
+                  - RE
+                  - RO
+                  - RS
+                  - RU
+                  - RW
+                  - SA
+                  - SB
+                  - SC
+                  - SE
+                  - SG
+                  - SH
+                  - SI
+                  - SJ
+                  - SK
+                  - SL
+                  - SM
+                  - SN
+                  - SR
+                  - SS
+                  - ST
+                  - SV
+                  - SX
+                  - SZ
+                  - TC
+                  - TD
+                  - TF
+                  - TG
+                  - TH
+                  - TJ
+                  - TK
+                  - TL
+                  - TM
+                  - TN
+                  - TO
+                  - TR
+                  - TT
+                  - TV
+                  - TW
+                  - TZ
+                  - UA
+                  - UG
+                  - UM
+                  - US
+                  - UY
+                  - UZ
+                  - VA
+                  - VC
+                  - VE
+                  - VG
+                  - VI
+                  - VN
+                  - VU
+                  - WF
+                  - WS
+                  - YE
+                  - YT
+                  - ZA
+                  - ZM
+                  - ZW
+                example: 'US'                  
+              postalCode:
+                type: string
+                description: Postal code of the return address.
+                minLength: 0
+                maxLength: 20
+                example: '30092'                
+              email:
+                type: string
+                description: E-mail address for the return.
+                minLength: 0
+                maxLength: 100
+                example: null                
+              phone:
+                type: string
+                description: Phone number for the return.
+                minLength: 0
+                maxLength: 20
+                example: null                
+          shipperAddress:
+            type: object
+            additionalProperties: false
+            required:
+              - address1
+              - country
+              - city
+            example: null
+            properties:
+              name:
+                type: string
+                description: Name of shipper.
+                minLength: 0
+                maxLength: 30
+                pattern: '^$|.*[^\s].*'
+                example: 'test'                
+              companyName:
+                type: string
+                description: Company name of shipper.
+                minLength: 0
+                maxLength: 30
+                pattern: '^$|.*[^\s].*'
+                example: null                
+              address1:
+                type: string
+                description: Address line 1 of shipper.
+                minLength: 1
+                maxLength: 50
+                pattern: '^$|.*[^\s].*'
+                example: 'test'                
+              address2:
+                type: string
+                description: Address line 2 of shipper.
+                minLength: 0
+                maxLength: 50
+                example: null                
+              address3:
+                type: string
+                description: Address line 3 of shipper.
+                minLength: 0
+                maxLength: 30
+                example: null                
+              city:
+                type: string
+                description: City of shipper.
+                minLength: 1
+                maxLength: 30
+                pattern: '^$|.*[^\s].*'
+                example: 'test'                
+              state:
+                type: string
+                description: State of shipper.
+                minLength: 0
+                maxLength: 20
+                example: 'GA'                
+              country:
+                type: string
+                description: Two-character ISO shipper address country code.
+                minLength: 2
+                maxLength: 2
+                enum:
+                  - AD
+                  - AE
+                  - AF
+                  - AG
+                  - AI
+                  - AL
+                  - AM
+                  - AO
+                  - AR
+                  - AS
+                  - AT
+                  - AU
+                  - AW
+                  - AZ
+                  - BA
+                  - BB
+                  - BD
+                  - BE
+                  - BF
+                  - BG
+                  - BH
+                  - BI
+                  - BJ
+                  - BL
+                  - BM
+                  - BN
+                  - BO
+                  - BQ
+                  - BR
+                  - BS
+                  - BT
+                  - BW
+                  - BY
+                  - BZ
+                  - CA
+                  - CC
+                  - CD
+                  - CF
+                  - CG
+                  - CH
+                  - CI
+                  - CK
+                  - CL
+                  - CM
+                  - CN
+                  - CO
+                  - CR
+                  - CV
+                  - CW
+                  - CX
+                  - CY
+                  - CZ
+                  - DE
+                  - DJ
+                  - DK
+                  - DM
+                  - DO
+                  - DZ
+                  - EC
+                  - EE
+                  - EG
+                  - EH
+                  - ER
+                  - ES
+                  - ET
+                  - FI
+                  - FJ
+                  - FK
+                  - FM
+                  - FO
+                  - FR
+                  - GA
+                  - GB
+                  - GD
+                  - GE
+                  - GF
+                  - GG
+                  - GH
+                  - GI
+                  - GL
+                  - GM
+                  - GN
+                  - GP
+                  - GQ
+                  - GR
+                  - GS
+                  - GU
+                  - GW
+                  - GY
+                  - HK
+                  - HN
+                  - HR
+                  - HT
+                  - HU
+                  - ID
+                  - IE
+                  - IL
+                  - IM
+                  - IN
+                  - IO
+                  - IQ
+                  - IS
+                  - IT
+                  - JE
+                  - JM
+                  - JO
+                  - JP
+                  - KE
+                  - KG
+                  - KH
+                  - KI
+                  - KM
+                  - KN
+                  - KR
+                  - KW
+                  - KY
+                  - KZ
+                  - LA
+                  - LB
+                  - LC
+                  - LI
+                  - LK
+                  - LR
+                  - LS
+                  - LT
+                  - LU
+                  - LV
+                  - LY
+                  - MA
+                  - MC
+                  - MD
+                  - ME
+                  - MF
+                  - MG
+                  - MH
+                  - MK
+                  - ML
+                  - MM
+                  - MN
+                  - MO
+                  - MP
+                  - MQ
+                  - MR
+                  - MS
+                  - MT
+                  - MU
+                  - MV
+                  - MW
+                  - MX
+                  - MY
+                  - MZ
+                  - NA
+                  - NC
+                  - NE
+                  - NF
+                  - NG
+                  - NI
+                  - NL
+                  - 'NO'
+                  - NP
+                  - NR
+                  - NU
+                  - NZ
+                  - OM
+                  - PA
+                  - PE
+                  - PF
+                  - PG
+                  - PH
+                  - PK
+                  - PL
+                  - PM
+                  - PN
+                  - PR
+                  - PS
+                  - PT
+                  - PW
+                  - PY
+                  - QA
+                  - RE
+                  - RO
+                  - RS
+                  - RU
+                  - RW
+                  - SA
+                  - SB
+                  - SC
+                  - SE
+                  - SG
+                  - SH
+                  - SI
+                  - SJ
+                  - SK
+                  - SL
+                  - SM
+                  - SN
+                  - SR
+                  - SS
+                  - ST
+                  - SV
+                  - SX
+                  - SZ
+                  - TC
+                  - TD
+                  - TF
+                  - TG
+                  - TH
+                  - TJ
+                  - TK
+                  - TL
+                  - TM
+                  - TN
+                  - TO
+                  - TR
+                  - TT
+                  - TV
+                  - TW
+                  - TZ
+                  - UA
+                  - UG
+                  - UM
+                  - US
+                  - UY
+                  - UZ
+                  - VA
+                  - VC
+                  - VE
+                  - VG
+                  - VI
+                  - VN
+                  - VU
+                  - WF
+                  - WS
+                  - YE
+                  - YT
+                  - ZA
+                  - ZM
+                  - ZW
+                example: 'US'                  
+              postalCode:
+                type: string
+                description: Postal code of the shipper address.
+                minLength: 0
+                maxLength: 20
+                example: '30092'                
+              email:
+                type: string
+                description: E-mail address of the shipper.
+                minLength: 0
+                maxLength: 100
+                example: null                
+              phone:
+                type: string
+                description: Phone number of the shipper.
+                minLength: 0
+                maxLength: 20
+                example: null                
+          pickupAddress:
+            type: object
+            additionalProperties: false
+            required:
+              - address1
+              - country
+              - city
+            example: null              
+            properties:
+              name:
+                type: string
+                description: Name of pickup contact.
+                minLength: 0
+                maxLength: 30
+                pattern: '^$|.*[^\s].*'
+                example: 'test'                
+              companyName:
+                type: string
+                description: Company name of pickup contact.
+                minLength: 0
+                maxLength: 30
+                pattern: '^$|.*[^\s].*'
+                example: null                
+              address1:
+                type: string
+                description: Address line 1 of pickup address.
+                minLength: 1
+                maxLength: 50
+                pattern: '^$|.*[^\s].*'
+                example: 'test'                
+              address2:
+                type: string
+                description: Address line 2 of pickup address.
+                minLength: 0
+                maxLength: 50
+                example: null                
+              address3:
+                type: string
+                description: Address line 3 of pickup address.
+                minLength: 0
+                maxLength: 30
+                example: null                
+              city:
+                type: string
+                description: City of pickup address.
+                minLength: 1
+                maxLength: 30
+                pattern: '^$|.*[^\s].*'
+                example: 'test'                
+              state:
+                type: string
+                description: State of pickup address.
+                minLength: 0
+                maxLength: 20
+                example: 'GA'                
+              country:
+                type: string
+                description: Two-character ISO pickup address country code.
+                minLength: 2
+                maxLength: 2
+                enum:
+                  - AD
+                  - AE
+                  - AF
+                  - AG
+                  - AI
+                  - AL
+                  - AM
+                  - AO
+                  - AR
+                  - AS
+                  - AT
+                  - AU
+                  - AW
+                  - AZ
+                  - BA
+                  - BB
+                  - BD
+                  - BE
+                  - BF
+                  - BG
+                  - BH
+                  - BI
+                  - BJ
+                  - BL
+                  - BM
+                  - BN
+                  - BO
+                  - BQ
+                  - BR
+                  - BS
+                  - BT
+                  - BW
+                  - BY
+                  - BZ
+                  - CA
+                  - CC
+                  - CD
+                  - CF
+                  - CG
+                  - CH
+                  - CI
+                  - CK
+                  - CL
+                  - CM
+                  - CN
+                  - CO
+                  - CR
+                  - CV
+                  - CW
+                  - CX
+                  - CY
+                  - CZ
+                  - DE
+                  - DJ
+                  - DK
+                  - DM
+                  - DO
+                  - DZ
+                  - EC
+                  - EE
+                  - EG
+                  - EH
+                  - ER
+                  - ES
+                  - ET
+                  - FI
+                  - FJ
+                  - FK
+                  - FM
+                  - FO
+                  - FR
+                  - GA
+                  - GB
+                  - GD
+                  - GE
+                  - GF
+                  - GG
+                  - GH
+                  - GI
+                  - GL
+                  - GM
+                  - GN
+                  - GP
+                  - GQ
+                  - GR
+                  - GS
+                  - GU
+                  - GW
+                  - GY
+                  - HK
+                  - HN
+                  - HR
+                  - HT
+                  - HU
+                  - ID
+                  - IE
+                  - IL
+                  - IM
+                  - IN
+                  - IO
+                  - IQ
+                  - IS
+                  - IT
+                  - JE
+                  - JM
+                  - JO
+                  - JP
+                  - KE
+                  - KG
+                  - KH
+                  - KI
+                  - KM
+                  - KN
+                  - KR
+                  - KW
+                  - KY
+                  - KZ
+                  - LA
+                  - LB
+                  - LC
+                  - LI
+                  - LK
+                  - LR
+                  - LS
+                  - LT
+                  - LU
+                  - LV
+                  - LY
+                  - MA
+                  - MC
+                  - MD
+                  - ME
+                  - MF
+                  - MG
+                  - MH
+                  - MK
+                  - ML
+                  - MM
+                  - MN
+                  - MO
+                  - MP
+                  - MQ
+                  - MR
+                  - MS
+                  - MT
+                  - MU
+                  - MV
+                  - MW
+                  - MX
+                  - MY
+                  - MZ
+                  - NA
+                  - NC
+                  - NE
+                  - NF
+                  - NG
+                  - NI
+                  - NL
+                  - 'NO'
+                  - NP
+                  - NR
+                  - NU
+                  - NZ
+                  - OM
+                  - PA
+                  - PE
+                  - PF
+                  - PG
+                  - PH
+                  - PK
+                  - PL
+                  - PM
+                  - PN
+                  - PR
+                  - PS
+                  - PT
+                  - PW
+                  - PY
+                  - QA
+                  - RE
+                  - RO
+                  - RS
+                  - RU
+                  - RW
+                  - SA
+                  - SB
+                  - SC
+                  - SE
+                  - SG
+                  - SH
+                  - SI
+                  - SJ
+                  - SK
+                  - SL
+                  - SM
+                  - SN
+                  - SR
+                  - SS
+                  - ST
+                  - SV
+                  - SX
+                  - SZ
+                  - TC
+                  - TD
+                  - TF
+                  - TG
+                  - TH
+                  - TJ
+                  - TK
+                  - TL
+                  - TM
+                  - TN
+                  - TO
+                  - TR
+                  - TT
+                  - TV
+                  - TW
+                  - TZ
+                  - UA
+                  - UG
+                  - UM
+                  - US
+                  - UY
+                  - UZ
+                  - VA
+                  - VC
+                  - VE
+                  - VG
+                  - VI
+                  - VN
+                  - VU
+                  - WF
+                  - WS
+                  - YE
+                  - YT
+                  - ZA
+                  - ZM
+                  - ZW
+                example: 'US'                  
+              postalCode:
+                type: string
+                description: Postal code of the pickup address.
+                minLength: 0
+                maxLength: 20
+                example: '30092'                
+              email:
+                type: string
+                description: E-mail address of the pickup contact.
+                minLength: 0
+                maxLength: 100
+                example: null                
+              phone:
+                type: string
+                description: Phone number of the pickup contact.
+                minLength: 0
+                maxLength: 20
+                example: null                
+          packageDetail:
+            type: object
+            additionalProperties: false
+            required:
+              - packageId
+              - weight
+            properties:
+              packageId:
+                type: string
+                description: Unique reference ID for shipment. Also referred to as Customer Confirmation Number.
+                minLength: 1
+                maxLength: 30
+                pattern: '^[a-zA-Z0-9]([a-zA-Z0-9_.\-]*[a-zA-Z0-9])?$'
+                example: 'V4-TEST-12345'
+              packageDescription:
+                type: string
+                description: Description of the contents of the package.
+                minLength: 0
+                maxLength: 50
+                example: null
+              packageReference:
+                type: string
+                description: A prefix that will be prepended to the human readable Package ID and display at the bottom of the label along with a barcode of the package ID.
+                minLength: 0
+                maxLength: 20
+                example: null
+              weight:
+                type: object
+                additionalProperties: false
+                required:
+                  - value
+                  - unitOfMeasure
+                properties:
+                  value:
+                    type: number
+                    format: float
+                    minimum: 0
+                    maximum: 999999999
+                    description: Total package weight.
+                    example: 1
+                  unitOfMeasure:
+                    type: string
+                    description: Unit of measure for the weight.
+                    enum:
+                      - LB
+                      - OZ
+                      - KG
+                      - G
+                    example: 'OZ'
+              dimension:
+                type: object
+                additionalProperties: false
+                required:
+                  - unitOfMeasure
+                  - length
+                  - width
+                  - height
+                example: null
+                properties:
+                  length:
+                    type: number
+                    format: float
+                    minimum: 0
+                    maximum: 999999999
+                    description: Length of the package.
+                    example: 1
+                  width:
+                    type: number
+                    format: float
+                    minimum: 0
+                    maximum: 999999999
+                    description: Width of the package.
+                  height:
+                    type: number
+                    format: float
+                    minimum: 0
+                    maximum: 999999999
+                    description: Height of the package.
+                  unitOfMeasure:
+                    type: string
+                    description: Unit of measure for dimensions.
+                    enum:
+                      - IN
+                      - CM
+              shippingCost:
+                type: object
+                additionalProperties: false
+                required:
+                  - currency
+                example: null                  
+                properties:
+                  currency:
+                    type: string
+                    description: Three-character ISO Currency code.
+                    minLength: 3
+                    maxLength: 3
+                  tax:
+                    type: number
+                    format: float
+                    minimum: 0
+                    maximum: 999999999
+                    description: Tax charges for the package.
+                  freight:
+                    type: number
+                    format: float
+                    minimum: 0
+                    maximum: 999999999
+                    description: Freight charges for the package.
+                  duty:
+                    type: number
+                    format: float
+                    minimum: 0
+                    maximum: 999999999
+                    description: Duty charges for the package.
+                  cashOnDelivery:
+                    type: number
+                    format: float
+                    minimum: 0
+                    maximum: 999999999
+                    description: Amount to collect upon delivery of goods.
+                  declaredValue:
+                    type: number
+                    format: float
+                    minimum: 0
+                    maximum: 999999999
+                    description: 'Total declared value for the package. While not mandatory, best practice is to provide if available'
+                  insuredValue:
+                    type: number
+                    format: float
+                    minimum: 0
+                    maximum: 999999999
+                    description: Total insured value of the package.
+                  dutiesPaid:
+                    type: boolean
+                    description: If duties and taxes for the shipment are paid by the shipper. International reference DDU or DDP.
+              contentCategory:
+                type: string
+                description: 'Identifies the DHLeCS dangerous goods category code. DHLeCS accepts two types of Dangerous Goods; these are Lithium batteries and ORM-D material which stands for other regulated materials for domestic transport only. While some sub-categories of Lithium batteries can be transported via the DHLeCS expedited air network, ORM-D materials are only allowed for ground transportation. Please refer to our documentation site for a list valid values'
+                minLength: 2
+                maxLength: 2
+                enum:
+                - '01'
+                - '02'
+                - '03'
+                - '04'
+                - '05'
+                - '06'
+                - '07'
+                - '08'
+                - '09'
+                - '40'
+                example: null
+              service:
+                type: string
+                description: 'Shipments orginating and destined to the United States will default to DELCON. Signature confirmation* is also available for certain products at an additional cost (please contact your Sales representative for more details). International shipments will default to the tracking capabilties available to the product/service selected. Shipment tracking is available for all parcel products. Tracking is available through the DHLeCS web portal, or through the USPS tracking site. For Domestic shipments: DELCON, or SIGCON. Leave blank for International shipments'
+                minLength: 0
+                enum:
+                  - DELCON
+                  - SIGCON
+                example: null
+              serviceEndorsement:
+                type: string
+                description: "Ancillary service endorsements are used to request an addressee\x92s new address and to provide the USPS with instructions on how to handle undeliverable-as-addressed pieces. The endorsements are the same for all classes of US Domestic mail, but the treatment and cost differ by class of mail. Use of an ancillary service endorsement on a mailpiece obligates the mailer to pay any applicable charges for forwarding, return, and separate address notification charges. Please refer to our documentation site for a list valid values"
+                minLength: 0
+                maxLength: 1
+                enum:
+                  - '1'
+                  - '2'
+                  - '3'
+                  - '4'
+                example: null
+              billingReference1:
+                type: string
+                description: String of characters that can be used to aggregate billing data (may not be unique per parcel). billingReference1 is also referred to as Reference
+                minLength: 0
+                maxLength: 30
+                example: null
+              billingReference2:
+                type: string
+                description: Secondary string of characters that can be used to aggregate billing data (may not be unique per parcel). billingReference2 is also referred to as Batch.
+                minLength: 0
+                maxLength: 30
+                example: null
+          customsDetails:
+            type: array
+            example: null
+            items:
+              type: object
+              additionalProperties: false
+              properties:
+                skuNumber:
+                  type: string
+                  description: 'SKU #, or item code - Used for product verification on clients website during customs clearance process.'
+                  minLength: 0
+                  maxLength: 20
+                  example: null
+                itemDescription:
+                  type: string
+                  description: Detailed description of the commodity item - Used for customs clearance. Accuracy and Detail are required.
+                  minLength: 0
+                  maxLength: 50
+                  example: null                  
+                countryOfOrigin:
+                  type: string
+                  description: Two-Character Country Code for Origin Manufacturer Country of the product.
+                  minLength: 2
+                  maxLength: 2
+                  enum:
+                    - AD
+                    - AE
+                    - AF
+                    - AG
+                    - AI
+                    - AL
+                    - AM
+                    - AO
+                    - AR
+                    - AS
+                    - AT
+                    - AU
+                    - AW
+                    - AZ
+                    - BA
+                    - BB
+                    - BD
+                    - BE
+                    - BF
+                    - BG
+                    - BH
+                    - BI
+                    - BJ
+                    - BL
+                    - BM
+                    - BN
+                    - BO
+                    - BQ
+                    - BR
+                    - BS
+                    - BT
+                    - BW
+                    - BY
+                    - BZ
+                    - CA
+                    - CC
+                    - CD
+                    - CF
+                    - CG
+                    - CH
+                    - CI
+                    - CK
+                    - CL
+                    - CM
+                    - CN
+                    - CO
+                    - CR
+                    - CV
+                    - CW
+                    - CX
+                    - CY
+                    - CZ
+                    - DE
+                    - DJ
+                    - DK
+                    - DM
+                    - DO
+                    - DZ
+                    - EC
+                    - EE
+                    - EG
+                    - EH
+                    - ER
+                    - ES
+                    - ET
+                    - FI
+                    - FJ
+                    - FK
+                    - FM
+                    - FO
+                    - FR
+                    - GA
+                    - GB
+                    - GD
+                    - GE
+                    - GF
+                    - GG
+                    - GH
+                    - GI
+                    - GL
+                    - GM
+                    - GN
+                    - GP
+                    - GQ
+                    - GR
+                    - GS
+                    - GU
+                    - GW
+                    - GY
+                    - HK
+                    - HN
+                    - HR
+                    - HT
+                    - HU
+                    - ID
+                    - IE
+                    - IL
+                    - IM
+                    - IN
+                    - IO
+                    - IQ
+                    - IS
+                    - IT
+                    - JE
+                    - JM
+                    - JO
+                    - JP
+                    - KE
+                    - KG
+                    - KH
+                    - KI
+                    - KM
+                    - KN
+                    - KR
+                    - KW
+                    - KY
+                    - KZ
+                    - LA
+                    - LB
+                    - LC
+                    - LI
+                    - LK
+                    - LR
+                    - LS
+                    - LT
+                    - LU
+                    - LV
+                    - LY
+                    - MA
+                    - MC
+                    - MD
+                    - ME
+                    - MF
+                    - MG
+                    - MH
+                    - MK
+                    - ML
+                    - MM
+                    - MN
+                    - MO
+                    - MP
+                    - MQ
+                    - MR
+                    - MS
+                    - MT
+                    - MU
+                    - MV
+                    - MW
+                    - MX
+                    - MY
+                    - MZ
+                    - NA
+                    - NC
+                    - NE
+                    - NF
+                    - NG
+                    - NI
+                    - NL
+                    - 'NO'
+                    - NP
+                    - NR
+                    - NU
+                    - NZ
+                    - OM
+                    - PA
+                    - PE
+                    - PF
+                    - PG
+                    - PH
+                    - PK
+                    - PL
+                    - PM
+                    - PN
+                    - PR
+                    - PS
+                    - PT
+                    - PW
+                    - PY
+                    - QA
+                    - RE
+                    - RO
+                    - RS
+                    - RU
+                    - RW
+                    - SA
+                    - SB
+                    - SC
+                    - SE
+                    - SG
+                    - SH
+                    - SI
+                    - SJ
+                    - SK
+                    - SL
+                    - SM
+                    - SN
+                    - SR
+                    - SS
+                    - ST
+                    - SV
+                    - SX
+                    - SZ
+                    - TC
+                    - TD
+                    - TF
+                    - TG
+                    - TH
+                    - TJ
+                    - TK
+                    - TL
+                    - TM
+                    - TN
+                    - TO
+                    - TR
+                    - TT
+                    - TV
+                    - TW
+                    - TZ
+                    - UA
+                    - UG
+                    - UM
+                    - US
+                    - UY
+                    - UZ
+                    - VA
+                    - VC
+                    - VE
+                    - VG
+                    - VI
+                    - VN
+                    - VU
+                    - WF
+                    - WS
+                    - YE
+                    - YT
+                    - ZA
+                    - ZM
+                    - ZW
+                  example: null                    
+                hsCode:
+                  type: string
+                  description: Harmonized Tariff Schedule is a number assigned to every possible commodity that can be imported or exported from any country. Please do not include any decimals "." in this field.
+                  minLength: 6
+                  maxLength: 20
+                  example: null                  
+                packagedQuantity:
+                  type: integer
+                  format: int32
+                  minimum: 0
+                  maximum: 999999999
+                  description: Quantity of the same item in the package.
+                  example: null
+                itemValue:
+                  type: number
+                  format: float
+                  minimum: 0
+                  maximum: 999999999
+                  description: Commercial value of the commodity (per each).
+                  example: null
+  labelResponse:
+    type: object
+    properties:
+      timestamp:
+        type: string
+        format: date-time
+        description: Date and time of the label request in UTC format.
+      pickup:
+        type: string
+        description: DHLeCS pickup account number. You will receive this after doing the onboarding with DHL sales
+        minLength: 1
+        maxLength: 10
+      distributionCenter:
+        type: string
+        description: Primary DHLeCS Distribution center assigned to your products/services
+        minLength: 1
+        maxLength: 6
+      orderedProductId:
+        type: string
+        description: DHLeCS three-character product code. Please refer to our documentation site for a list valid values
+        minLength: 1
+        maxLength: 10
+      mailType:
+        type: string
+        description: Identifies the mail type of the shipment. Refer to the mail type matrix for a list of valid mail types. Please refer to our documentation site for a list valid values
+        minLength: 1
+        maxLength: 2
+      labels:
+        type: array
+        items:
+          type: object
+          additionalProperties: false
+          properties:
+            createdOn:
+              type: string
+              format: date-time
+              description: Date and time the label was created in UTC format.
+            packageId:
+              type: string
+              description: Unique reference ID for shipment. Also referred to as Customer Confirmation Number.
+              minLength: 1
+              maxLength: 30
+            dhlPackageId:
+              type: string
+              description: Unique DHLeCS reference ID for shipment.
+              minLength: 1
+              maxLength: 30
+            trackingId:
+              type: string
+              description: Unique reference ID for shipment that may be used to track with the last mile delivery provider
+              minLength: 1
+              maxLength: 30
+            labelData:
+              type: string
+              description: This will be an encoded string containing the shipping label image or a plain text zpl string depending on the format requested
+            encodeType:
+              type: string
+              description: Either base64 or plain text depending on the label format requested
+              enum:
+                - BASE64
+                - PLAIN
+            format:
+              type: string
+              description: Either zpl or png depending on the label format requested
+              enum:
+                - zpl
+                - png
+            link:
+              type: string
+              description: Link to the label
+            labelDetail:
+              type: object
+              properties:
+                construct:
+                  type: string
+                  description: ''
+                stc:
+                  type: string
+                  description: ''
+                contentCategory:
+                  type: string
+                  description: ''
+                serviceLevel:
+                  type: string
+                  description: ''
+                outboundSortCode:
+                  type: string
+                  description: ''
+                sortingSetupVersion:
+                  type: string
+                  description: ''
+                inboundSortCode:
+                  type: string
+                  description: ''
+                serviceEndorsement:
+                  type: string
+                  description: ''
+                intendedReceivingFacility:
+                  type: string
+                  description: ''
+                mailBanner:
+                  type: string
+                  description: ''
+                customsDetailsProvided:
+                  type: boolean
+                  description: ''
+  manifestRequest:
+    type: object
+    additionalProperties: false
+    required:
+      - pickup
+      - manifests
+    properties:
+      pickup:
+        type: string
+        description: The DHLeCS pickup account number. You will receive this after doing the onboarding with DHL sales
+        minLength: 1
+        maxLength: 10
+      manifests:
+        type: array
+        minItems: 0
+        maxItems: 1
+        items:
+          type: object
+          additionalProperties: false
+          properties:
+            dhlPackageIds:
+              type: array
+              minItems: 1
+              maxItems: 10000
+              items:
+                type: string
+                minLength: 1
+                maxLength: 30
+                pattern: '^\d+$'
+            packageIds:
+              type: array
+              minItems: 1
+              maxItems: 10000
+              items:
+                type: string
+                minLength: 1
+                maxLength: 30
+                pattern: '^[a-zA-Z0-9]([a-zA-Z0-9_.\-]*[a-zA-Z0-9])?$'
+  manifestPostResponse:
+    type: object
+    properties:
+      timestamp:
+        type: string
+        format: date-time
+        description: The date and time of the create manifest request in UTC format.
+      requestId:
+        type: string
+        description: The DHLeCS request ID that can be used to access the driver summary manifest document(s) once created.
+      link:
+        type: string
+        description: The DHLeCS link that can be used to access the driver summary manifest document(s) once created.
+  manifestGetResponse:
+    type: object
+    properties:
+      timestamp:
+        type: string
+        format: date-time
+        description: The date and time of the get manifest request in UTC format.
+      requestId:
+        type: string
+        description: The DHLeCS request ID that can be used to access the driver summary manifest document once created.
+      status:
+        type: string
+        description: Status of the manifest request
+        enum:
+          - COMPLETE
+          - INPROGRESS
+      link:
+        type: string
+        description: The DHLeCS link that can be used to access the driver summary manifest documents once created.
+      manifests:
+        type: array
+        items:
+          type: object
+          additionalProperties: false
+          properties:
+            createdOn:
+              type: string
+              format: date-time
+              description: The date and time the manifest document was created in UTC format.
+            manifestId:
+              type: string
+              description: The The DHLeCS manifest ID
+            distributionCenter:
+              type: string
+              description: Primary DHLeCS Distribution center assigned to your products/services
+            isInternational:
+              type: boolean
+              description: Does this manifest contain packages that have an international (Non-US) destination
+            total:
+              type: integer
+              description: The number of packages in the manifest
+            manifestData:
+              type: string
+              description: This will be an encoded string containing the manifest document in PDF format
+            encodeType:
+              type: string
+              description: Encode type of the manifest document
+              enum:
+                - base64
+            format:
+              type: string
+              description: Manifest document format
+              enum:
+                - pdf
+      manifestSummary:
+        type: object
+        properties:
+          total:
+            type: integer
+            description: The number of shipments for all manifests.
+          invalid:
+            type: object
+            properties:
+              total:
+                type: integer
+                description: The number of invalid shipments for all manifests.
+              dhlPackageIds:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    dhlPackageId:
+                      type: string
+                      description: Unique DHLeCS reference ID for shipment.
+                    errorCode:
+                      type: integer
+                      description: The DHLeCS error code.
+                    errorDescription:
+                      type: string
+                      description: The DHLeCS error description.
+  trackingResponse:
+    type: object
+    properties:
+      total:
+        type: integer
+        description: Total packages found.
+      limit:
+        type: integer
+        description: The numbers of packages to return.
+      offset:
+        type: integer
+        description: The number of packages skipped before starting to collect the result set.
+      timestamp:
+        type: string
+        format: date-time
+        description: Timestamp of the request in ET.
+      links:
+        type: object
+        properties:
+          previous:
+            type: string
+            description: Link to the previous page of results.
+          next:
+            type: string
+            description: Link to the next page of results.
+      packages:
+        type: array
+        items:
+          type: object
+          properties:
+            recipient:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Recipient name associated with the package.
+                signedForName:
+                  type: string
+                  description: Recipient name that signed for the package.
+                address1:
+                  type: string
+                  description: Recipient address 1 for the package.
+                address2:
+                  type: string
+                  description: Recipient address 2 for the package.
+                city:
+                  type: string
+                  description: Recipient city for the package.
+                state:
+                  type: string
+                  description: Recipient state for the package.
+                postalCode:
+                  type: string
+                  description: Recipient postal code for the package.
+                country:
+                  type: string
+                  description: Recipient country for the package.
+            events:
+              type: array
+              items:
+                type: object
+                properties:
+                  location:
+                    type: string
+                    description: Location of the event.
+                  date:
+                    type: string
+                    description: Date of the event in YYYY-MM-DD Format.
+                  time:
+                    type: string
+                    description: 'Time of the event in HH24:MM:SS Format.'
+                  timeZone:
+                    type: string
+                    description: Timezone of the event.
+                  postalCode:
+                    type: string
+                    description: Postal code of the event.
+                  country:
+                    type: string
+                    description: Country of the event.
+                  primaryEventId:
+                    type: string
+                    description: Primary DHLeCS event ID for the event.
+                  secondaryEventId:
+                    type: string
+                    description: Secondary DHLeCS event ID for the event.
+                  secondaryEventDescription:
+                    type: string
+                    description: Secondary DHLeCS event description for the event.
+            pickupDetail:
+              type: object
+              properties:
+                soldTo:
+                  type: string
+                  description: The DHLeCS soldto account number.
+                pickup:
+                  type: string
+                  description: The DHLeCS pickup account number.
+                pickupAddress:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      description: Pickup name for the package.
+                    address1:
+                      type: string
+                      description: Pickup address 1 for the package.
+                    address2:
+                      type: string
+                      description: Pickup address 2 for the package.
+                    city:
+                      type: string
+                      description: Pickup city for the package.
+                    state:
+                      type: string
+                      description: Pickup state for the package.
+                    postalCode:
+                      type: string
+                      description: Pickup postal code for the package.
+                    country:
+                      type: string
+                      description: Pickup country for the package.
+                    email:
+                      type: string
+                      description: Pickup contact email for the package.
+                    phone:
+                      type: string
+                      description: Pickup contact phone for the package.
+            package:
+              type: object
+              properties:
+                manifestId:
+                  type: string
+                  description: ''
+                packageId:
+                  type: string
+                  description: Unique reference ID for shipment. Also referred to as Customer Confirmation Number.
+                dhlPackageId:
+                  type: string
+                  description: Unique DHLeCS reference ID for shipment.
+                trackingId:
+                  type: string
+                  description: Unique reference ID for shipment that may be used to track with the last mile delivery provider.
+                deliveryConfirmationNumber:
+                  type: string
+                  description: Unique reference ID for shipment that may be used to track with the last mile delivery provider.
+                overlabeledDspNumber:
+                  type: string
+                  description: The delivery confirmation number for packages overlabeled by DHLeCS.
+                intelligentMailBarcode:
+                  type: string
+                  description: USPS Intelligent Mail Barcode for the package.
+                overlabeledIntelligentMailBarcode:
+                  type: string
+                  description: The USPS Intelligent Mail barcode For packages overlabeled by DHLeCS.
+                productClass:
+                  type: string
+                  description: DHLeCS product class for the package.
+                orderedProductId:
+                  type: string
+                  description: DHLeCS three-character product code. Please refer to our documentation site for a list valid values
+                signatureConfirmationFlag:
+                  type: boolean
+                  description: Does the package have signature confirmation?
+                expectedDelivery:
+                  type: string
+                  description: The date the package is expected to receive a delivery scan.
+                intelligentMailBarcodeFlag:
+                  type: boolean
+                  description: Does the package have a USPS Intelligent Mail Barcode assigned?
+                declaredValue:
+                  type: string
+                  description: Declared monetary value for the package.
+                declaredValueCurrency:
+                  type: string
+                  description: Currency code for the declared value.
+                codAmount:
+                  type: string
+                  description: Cash on delivery value.
+                codCurrency:
+                  type: string
+                  description: Curreny code for the cash on delivery value.
+                codRemitTrackingNumber:
+                  type: string
+                  description: ''
+                batchReference:
+                  type: string
+                  description: ''
+                deliveryConfirmationFlag:
+                  type: boolean
+                  description: Does the package have delivery confirmation?
+                customerReference:
+                  type: string
+                  description: Customer-provided reference Id for the package.
+                contentCategory:
+                  type: string
+                  description: 'Identifies the DHLeCS dangerous goods category code. DHLeCS accepts two types of Dangerous Goods; these are Lithium batteries and ORM-D material which stands for other regulated materials for domestic transport only. While some sub-categories of Lithium batteries can be transported via DHLeCS expedited air network, ORM-D materials are only allowed for ground transportation. Please refer to our documentation site for a list valid values'
+  authenticationResponse:
+    type: object
+    properties:
+      access_token:
+        type: string
+        description: Access Token
+      clientId:
+        type: integer
+        description: The client ID associated with the token
+      tokenType:
+        type: string
+        description: Type of authentication token
+        enum: 
+          - Bearer
+      expiresIn:
+        type: integer
+        description: Number of minutes until the token expires       
+      developerApp:
+        type: string
+        description: Developer APp name associated with the client Id
+      timestamp:
+        type: string
+        format: date-time
+        description: Timestamp of the request in ET
