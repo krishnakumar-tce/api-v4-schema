@@ -192,12 +192,6 @@ paths:
           type: string
           description: Must be within 7 days of startDate. Format should be YYYY-MM-DD. Timezone is in ET.
         - in: query
-          name: dateType
-          type: string
-          description: Type of date attribute to use in filter.  RECEIVEDATE will be used if not provided.
-          enum:
-            - RECEIVEDATE
-        - in: query
           name: city
           type: string
           description: Recipient city associated with the package.
@@ -2484,27 +2478,3 @@ definitions:
                 contentCategory:
                   type: string
                   description: 'Identifies the DHLeCS dangerous goods category code. DHLeCS accepts two types of Dangerous Goods; these are Lithium batteries and ORM-D material which stands for other regulated materials for domestic transport only. While some sub-categories of Lithium batteries can be transported via DHLeCS expedited air network, ORM-D materials are only allowed for ground transportation. Please refer to our documentation site for a list valid values'
-  authenticationResponse:
-    type: object
-    properties:
-      access_token:
-        type: string
-        description: Access Token
-      clientId:
-        type: integer
-        description: The client ID associated with the token
-      tokenType:
-        type: string
-        description: Type of authentication token
-        enum: 
-          - Bearer
-      expiresIn:
-        type: integer
-        description: Number of minutes until the token expires       
-      developerApp:
-        type: string
-        description: Developer APp name associated with the client Id
-      timestamp:
-        type: string
-        format: date-time
-        description: Timestamp of the request in ET
