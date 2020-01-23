@@ -46,10 +46,10 @@ paths:
           name: format
           type: string
           required: true
-          description: png will return a base64 encoded string containing a label image. zpl will return a zpl formatted string in plain text
+          description: PNG will return a BASE64 encoded string containing a label image. ZPL will return a ZPL formatted string in plain text
           enum:
-            - zpl
-            - png
+            - ZPL
+            - PNG
         - in: body
           name: body
           description: Request Body
@@ -243,8 +243,12 @@ definitions:
     type: object
     additionalProperties: false
     required:
+      - orderedProductId
+      - distributionCenter
+      - consigneeAddress
+      - returnAddress
+      - packageDetail
       - pickup
-      - package
     properties:
       pickup:
         type: string
@@ -252,1797 +256,1799 @@ definitions:
         minLength: 1
         maxLength: 10
         pattern: '^[\S]+$'
-        example: "5320037"
-      package:
+        example: '5320037'          
+      distributionCenter:
+        type: string
+        description: Primary DHLeCS Distribution center assigned to your products/services
+        minLength: 1
+        maxLength: 6
+        pattern: '^[\S]+$'
+        example: 'USRDU1'
+      merchantId:
+        type: string
+        description: Merchant account Id for the request
+        minLength: 0
+        maxLength: 30
+        example: 'test'
+      orderedProductId:
+        type: string
+        description: DHLeCS three-character product code. Please refer to our documentation site for a list valid values
+        enum:
+          - MAX
+          - EXP
+          - GND
+          - BEX
+          - BGN
+          - PLT
+          - PLY
+          - PKY
+        example: 'PLT'
+      consigneeAddress:
         type: object
         additionalProperties: false
         required:
-          - orderedProductId
-          - distributionCenter
-          - consigneeAddress
-          - returnAddress
-          - packageDetail
+          - address1
+          - country
+          - city
         properties:
-          distributionCenter:
+          name:
             type: string
-            description: Primary DHLeCS Distribution center assigned to your products/services
-            minLength: 1
-            maxLength: 6
-            pattern: '^[\S]+$'
-            example: "USRDU1"
-          merchantId:
-            type: string
-            description: Merchant account Id for the request
+            description: Name of consignee.
             minLength: 0
             maxLength: 30
-            example: null
-          orderedProductId:
+            pattern: '^$|.*[^\s].*'
+            example: 'test'                
+          companyName:
             type: string
-            description: DHLeCS three-character product code. Please refer to our documentation site for a list valid values
+            description: Company name of consignee.
+            minLength: 0
+            maxLength: 30
+            pattern: '^$|.*[^\s].*'
+            example: 'test'                
+          address1:
+            type: string
+            description: Address line 1 of consignee.
+            minLength: 1
+            maxLength: 50
+            pattern: '^$|.*[^\s].*'
+            example: 'test'                
+          address2:
+            type: string
+            description: Address line 2 of consignee.
+            minLength: 0
+            maxLength: 50
+            example: 'test'                
+          address3:
+            type: string
+            description: Address line 3 of consignee.
+            minLength: 0
+            maxLength: 30
+            example: 'test'                
+          city:
+            type: string
+            description: City of consignee.
+            minLength: 1
+            maxLength: 30
+            pattern: '^$|.*[^\s].*'
+            example: 'test'                
+          state:
+            type: string
+            description: State of consignee.
+            minLength: 0
+            maxLength: 20
+            example: 'test'                
+          country:
+            type: string
+            description: Two-character ISO consignee address country code.
+            minLength: 2
+            maxLength: 2
             enum:
-              - MAX
-              - EXP
-              - GND
-              - BEX
-              - BGN
-              - PLT
-              - PLY
-              - PKY
-            example: "GND"
-          consigneeAddress:
+              - AD
+              - AE
+              - AF
+              - AG
+              - AI
+              - AL
+              - AM
+              - AO
+              - AR
+              - AS
+              - AT
+              - AU
+              - AW
+              - AZ
+              - BA
+              - BB
+              - BD
+              - BE
+              - BF
+              - BG
+              - BH
+              - BI
+              - BJ
+              - BL
+              - BM
+              - BN
+              - BO
+              - BQ
+              - BR
+              - BS
+              - BT
+              - BW
+              - BY
+              - BZ
+              - CA
+              - CC
+              - CD
+              - CF
+              - CG
+              - CH
+              - CI
+              - CK
+              - CL
+              - CM
+              - CN
+              - CO
+              - CR
+              - CV
+              - CW
+              - CX
+              - CY
+              - CZ
+              - DE
+              - DJ
+              - DK
+              - DM
+              - DO
+              - DZ
+              - EC
+              - EE
+              - EG
+              - EH
+              - ER
+              - ES
+              - ET
+              - FI
+              - FJ
+              - FK
+              - FM
+              - FO
+              - FR
+              - GA
+              - GB
+              - GD
+              - GE
+              - GF
+              - GG
+              - GH
+              - GI
+              - GL
+              - GM
+              - GN
+              - GP
+              - GQ
+              - GR
+              - GS
+              - GU
+              - GW
+              - GY
+              - HK
+              - HN
+              - HR
+              - HT
+              - HU
+              - ID
+              - IE
+              - IL
+              - IM
+              - IN
+              - IO
+              - IQ
+              - IS
+              - IT
+              - JE
+              - JM
+              - JO
+              - JP
+              - KE
+              - KG
+              - KH
+              - KI
+              - KM
+              - KN
+              - KR
+              - KW
+              - KY
+              - KZ
+              - LA
+              - LB
+              - LC
+              - LI
+              - LK
+              - LR
+              - LS
+              - LT
+              - LU
+              - LV
+              - LY
+              - MA
+              - MC
+              - MD
+              - ME
+              - MF
+              - MG
+              - MH
+              - MK
+              - ML
+              - MM
+              - MN
+              - MO
+              - MP
+              - MQ
+              - MR
+              - MS
+              - MT
+              - MU
+              - MV
+              - MW
+              - MX
+              - MY
+              - MZ
+              - NA
+              - NC
+              - NE
+              - NF
+              - NG
+              - NI
+              - NL
+              - 'NO'
+              - NP
+              - NR
+              - NU
+              - NZ
+              - OM
+              - PA
+              - PE
+              - PF
+              - PG
+              - PH
+              - PK
+              - PL
+              - PM
+              - PN
+              - PR
+              - PS
+              - PT
+              - PW
+              - PY
+              - QA
+              - RE
+              - RO
+              - RS
+              - RU
+              - RW
+              - SA
+              - SB
+              - SC
+              - SE
+              - SG
+              - SH
+              - SI
+              - SJ
+              - SK
+              - SL
+              - SM
+              - SN
+              - SR
+              - SS
+              - ST
+              - SV
+              - SX
+              - SZ
+              - TC
+              - TD
+              - TF
+              - TG
+              - TH
+              - TJ
+              - TK
+              - TL
+              - TM
+              - TN
+              - TO
+              - TR
+              - TT
+              - TV
+              - TW
+              - TZ
+              - UA
+              - UG
+              - UM
+              - US
+              - UY
+              - UZ
+              - VA
+              - VC
+              - VE
+              - VG
+              - VI
+              - VN
+              - VU
+              - WF
+              - WS
+              - YE
+              - YT
+              - ZA
+              - ZM
+              - ZW
+            example: 'CA'                  
+          postalCode:
+            type: string
+            description: Postal code of consignee.
+            minLength: 0
+            maxLength: 20
+            example: 'test'                
+          email:
+            type: string
+            description: E-mail address of consignee.
+            minLength: 0
+            maxLength: 100
+            example: 'test'                
+          phone:
+            type: string
+            description: Phone number of consignee.
+            minLength: 0
+            maxLength: 20
+            example: 'test'                
+          idNumber:
+            type: string
+            description: Identification number of consignee.
+            minLength: 0
+            maxLength: 30
+            example: 'test'
+          idType:
+            type: integer
+            format: int32
+            description: Identification type of consignee. Please refer to our documentation site for a list valid values
+            minLength: 0
+            enum:
+              - 1
+              - 2
+              - 3
+              - 4
+            example: 1
+      returnAddress:
+        type: object
+        additionalProperties: false
+        required:
+          - address1
+          - country
+          - city
+        properties:
+          name:
+            type: string
+            description: Name of person receiveing the returned package.
+            minLength: 0
+            maxLength: 30
+            pattern: '^$|.*[^\s].*'
+            example: 'test'                
+          companyName:
+            type: string
+            description: Company name receiveing the returned package.
+            minLength: 0
+            maxLength: 30
+            pattern: '^$|.*[^\s].*'
+            example: 'test'                
+          address1:
+            type: string
+            description: Address line 1 of the return address.
+            minLength: 1
+            maxLength: 50
+            pattern: '^$|.*[^\s].*'
+            example: 'test'                
+          address2:
+            type: string
+            description: Address line 2 of the return address.
+            minLength: 0
+            maxLength: 50
+            example: 'test'                
+          address3:
+            type: string
+            description: Address line 3 of the return address.
+            minLength: 0
+            maxLength: 30
+            example: 'test'                
+          city:
+            type: string
+            description: City of the return address.
+            minLength: 1
+            maxLength: 30
+            pattern: '^$|.*[^\s].*'
+            example: 'test'                
+          state:
+            type: string
+            description: State of the return address.
+            minLength: 0
+            maxLength: 20
+            example: 'test'                
+          country:
+            type: string
+            description: Two-character ISO return address country code.
+            minLength: 2
+            maxLength: 2
+            enum:
+              - AD
+              - AE
+              - AF
+              - AG
+              - AI
+              - AL
+              - AM
+              - AO
+              - AR
+              - AS
+              - AT
+              - AU
+              - AW
+              - AZ
+              - BA
+              - BB
+              - BD
+              - BE
+              - BF
+              - BG
+              - BH
+              - BI
+              - BJ
+              - BL
+              - BM
+              - BN
+              - BO
+              - BQ
+              - BR
+              - BS
+              - BT
+              - BW
+              - BY
+              - BZ
+              - CA
+              - CC
+              - CD
+              - CF
+              - CG
+              - CH
+              - CI
+              - CK
+              - CL
+              - CM
+              - CN
+              - CO
+              - CR
+              - CV
+              - CW
+              - CX
+              - CY
+              - CZ
+              - DE
+              - DJ
+              - DK
+              - DM
+              - DO
+              - DZ
+              - EC
+              - EE
+              - EG
+              - EH
+              - ER
+              - ES
+              - ET
+              - FI
+              - FJ
+              - FK
+              - FM
+              - FO
+              - FR
+              - GA
+              - GB
+              - GD
+              - GE
+              - GF
+              - GG
+              - GH
+              - GI
+              - GL
+              - GM
+              - GN
+              - GP
+              - GQ
+              - GR
+              - GS
+              - GU
+              - GW
+              - GY
+              - HK
+              - HN
+              - HR
+              - HT
+              - HU
+              - ID
+              - IE
+              - IL
+              - IM
+              - IN
+              - IO
+              - IQ
+              - IS
+              - IT
+              - JE
+              - JM
+              - JO
+              - JP
+              - KE
+              - KG
+              - KH
+              - KI
+              - KM
+              - KN
+              - KR
+              - KW
+              - KY
+              - KZ
+              - LA
+              - LB
+              - LC
+              - LI
+              - LK
+              - LR
+              - LS
+              - LT
+              - LU
+              - LV
+              - LY
+              - MA
+              - MC
+              - MD
+              - ME
+              - MF
+              - MG
+              - MH
+              - MK
+              - ML
+              - MM
+              - MN
+              - MO
+              - MP
+              - MQ
+              - MR
+              - MS
+              - MT
+              - MU
+              - MV
+              - MW
+              - MX
+              - MY
+              - MZ
+              - NA
+              - NC
+              - NE
+              - NF
+              - NG
+              - NI
+              - NL
+              - 'NO'
+              - NP
+              - NR
+              - NU
+              - NZ
+              - OM
+              - PA
+              - PE
+              - PF
+              - PG
+              - PH
+              - PK
+              - PL
+              - PM
+              - PN
+              - PR
+              - PS
+              - PT
+              - PW
+              - PY
+              - QA
+              - RE
+              - RO
+              - RS
+              - RU
+              - RW
+              - SA
+              - SB
+              - SC
+              - SE
+              - SG
+              - SH
+              - SI
+              - SJ
+              - SK
+              - SL
+              - SM
+              - SN
+              - SR
+              - SS
+              - ST
+              - SV
+              - SX
+              - SZ
+              - TC
+              - TD
+              - TF
+              - TG
+              - TH
+              - TJ
+              - TK
+              - TL
+              - TM
+              - TN
+              - TO
+              - TR
+              - TT
+              - TV
+              - TW
+              - TZ
+              - UA
+              - UG
+              - UM
+              - US
+              - UY
+              - UZ
+              - VA
+              - VC
+              - VE
+              - VG
+              - VI
+              - VN
+              - VU
+              - WF
+              - WS
+              - YE
+              - YT
+              - ZA
+              - ZM
+              - ZW
+            example: 'CA'                  
+          postalCode:
+            type: string
+            description: Postal code of the return address.
+            minLength: 0
+            maxLength: 20
+            example: 'test'                
+          email:
+            type: string
+            description: E-mail address for the return.
+            minLength: 0
+            maxLength: 100
+            example: 'test'                
+          phone:
+            type: string
+            description: Phone number for the return.
+            minLength: 0
+            maxLength: 20
+            example: 'test'                
+      shipperAddress:
+        type: object
+        additionalProperties: false
+        required:
+          - address1
+          - country
+          - city
+        properties:
+          name:
+            type: string
+            description: Name of shipper.
+            minLength: 0
+            maxLength: 30
+            pattern: '^$|.*[^\s].*'
+            example: 'test'                
+          companyName:
+            type: string
+            description: Company name of shipper.
+            minLength: 0
+            maxLength: 30
+            pattern: '^$|.*[^\s].*'
+            example: 'test'                
+          address1:
+            type: string
+            description: Address line 1 of shipper.
+            minLength: 1
+            maxLength: 50
+            pattern: '^$|.*[^\s].*'
+            example: 'test'                
+          address2:
+            type: string
+            description: Address line 2 of shipper.
+            minLength: 0
+            maxLength: 50
+            example: 'test'                
+          address3:
+            type: string
+            description: Address line 3 of shipper.
+            minLength: 0
+            maxLength: 30
+            example: 'test'                
+          city:
+            type: string
+            description: City of shipper.
+            minLength: 1
+            maxLength: 30
+            pattern: '^$|.*[^\s].*'
+            example: 'test'                
+          state:
+            type: string
+            description: State of shipper.
+            minLength: 0
+            maxLength: 20
+            example: 'test'                
+          country:
+            type: string
+            description: Two-character ISO shipper address country code.
+            minLength: 2
+            maxLength: 2
+            enum:
+              - AD
+              - AE
+              - AF
+              - AG
+              - AI
+              - AL
+              - AM
+              - AO
+              - AR
+              - AS
+              - AT
+              - AU
+              - AW
+              - AZ
+              - BA
+              - BB
+              - BD
+              - BE
+              - BF
+              - BG
+              - BH
+              - BI
+              - BJ
+              - BL
+              - BM
+              - BN
+              - BO
+              - BQ
+              - BR
+              - BS
+              - BT
+              - BW
+              - BY
+              - BZ
+              - CA
+              - CC
+              - CD
+              - CF
+              - CG
+              - CH
+              - CI
+              - CK
+              - CL
+              - CM
+              - CN
+              - CO
+              - CR
+              - CV
+              - CW
+              - CX
+              - CY
+              - CZ
+              - DE
+              - DJ
+              - DK
+              - DM
+              - DO
+              - DZ
+              - EC
+              - EE
+              - EG
+              - EH
+              - ER
+              - ES
+              - ET
+              - FI
+              - FJ
+              - FK
+              - FM
+              - FO
+              - FR
+              - GA
+              - GB
+              - GD
+              - GE
+              - GF
+              - GG
+              - GH
+              - GI
+              - GL
+              - GM
+              - GN
+              - GP
+              - GQ
+              - GR
+              - GS
+              - GU
+              - GW
+              - GY
+              - HK
+              - HN
+              - HR
+              - HT
+              - HU
+              - ID
+              - IE
+              - IL
+              - IM
+              - IN
+              - IO
+              - IQ
+              - IS
+              - IT
+              - JE
+              - JM
+              - JO
+              - JP
+              - KE
+              - KG
+              - KH
+              - KI
+              - KM
+              - KN
+              - KR
+              - KW
+              - KY
+              - KZ
+              - LA
+              - LB
+              - LC
+              - LI
+              - LK
+              - LR
+              - LS
+              - LT
+              - LU
+              - LV
+              - LY
+              - MA
+              - MC
+              - MD
+              - ME
+              - MF
+              - MG
+              - MH
+              - MK
+              - ML
+              - MM
+              - MN
+              - MO
+              - MP
+              - MQ
+              - MR
+              - MS
+              - MT
+              - MU
+              - MV
+              - MW
+              - MX
+              - MY
+              - MZ
+              - NA
+              - NC
+              - NE
+              - NF
+              - NG
+              - NI
+              - NL
+              - 'NO'
+              - NP
+              - NR
+              - NU
+              - NZ
+              - OM
+              - PA
+              - PE
+              - PF
+              - PG
+              - PH
+              - PK
+              - PL
+              - PM
+              - PN
+              - PR
+              - PS
+              - PT
+              - PW
+              - PY
+              - QA
+              - RE
+              - RO
+              - RS
+              - RU
+              - RW
+              - SA
+              - SB
+              - SC
+              - SE
+              - SG
+              - SH
+              - SI
+              - SJ
+              - SK
+              - SL
+              - SM
+              - SN
+              - SR
+              - SS
+              - ST
+              - SV
+              - SX
+              - SZ
+              - TC
+              - TD
+              - TF
+              - TG
+              - TH
+              - TJ
+              - TK
+              - TL
+              - TM
+              - TN
+              - TO
+              - TR
+              - TT
+              - TV
+              - TW
+              - TZ
+              - UA
+              - UG
+              - UM
+              - US
+              - UY
+              - UZ
+              - VA
+              - VC
+              - VE
+              - VG
+              - VI
+              - VN
+              - VU
+              - WF
+              - WS
+              - YE
+              - YT
+              - ZA
+              - ZM
+              - ZW
+            example: 'CA'                  
+          postalCode:
+            type: string
+            description: Postal code of the shipper address.
+            minLength: 0
+            maxLength: 20
+            example: 'test'                
+          email:
+            type: string
+            description: E-mail address of the shipper.
+            minLength: 0
+            maxLength: 100
+            example: 'test'                
+          phone:
+            type: string
+            description: Phone number of the shipper.
+            minLength: 0
+            maxLength: 20
+            example: 'test'                
+      pickupAddress:
+        type: object
+        additionalProperties: false
+        required:
+          - address1
+          - country
+          - city
+        properties:
+          name:
+            type: string
+            description: Name of pickup contact.
+            minLength: 0
+            maxLength: 30
+            pattern: '^$|.*[^\s].*'
+            example: 'test'                
+          companyName:
+            type: string
+            description: Company name of pickup contact.
+            minLength: 0
+            maxLength: 30
+            pattern: '^$|.*[^\s].*'
+            example: 'test'                
+          address1:
+            type: string
+            description: Address line 1 of pickup address.
+            minLength: 1
+            maxLength: 50
+            pattern: '^$|.*[^\s].*'
+            example: 'test'                
+          address2:
+            type: string
+            description: Address line 2 of pickup address.
+            minLength: 0
+            maxLength: 50
+            example: 'test'                
+          address3:
+            type: string
+            description: Address line 3 of pickup address.
+            minLength: 0
+            maxLength: 30
+            example: 'test'                
+          city:
+            type: string
+            description: City of pickup address.
+            minLength: 1
+            maxLength: 30
+            pattern: '^$|.*[^\s].*'
+            example: 'test'                
+          state:
+            type: string
+            description: State of pickup address.
+            minLength: 0
+            maxLength: 20
+            example: 'test'                
+          country:
+            type: string
+            description: Two-character ISO pickup address country code.
+            minLength: 2
+            maxLength: 2
+            enum:
+              - AD
+              - AE
+              - AF
+              - AG
+              - AI
+              - AL
+              - AM
+              - AO
+              - AR
+              - AS
+              - AT
+              - AU
+              - AW
+              - AZ
+              - BA
+              - BB
+              - BD
+              - BE
+              - BF
+              - BG
+              - BH
+              - BI
+              - BJ
+              - BL
+              - BM
+              - BN
+              - BO
+              - BQ
+              - BR
+              - BS
+              - BT
+              - BW
+              - BY
+              - BZ
+              - CA
+              - CC
+              - CD
+              - CF
+              - CG
+              - CH
+              - CI
+              - CK
+              - CL
+              - CM
+              - CN
+              - CO
+              - CR
+              - CV
+              - CW
+              - CX
+              - CY
+              - CZ
+              - DE
+              - DJ
+              - DK
+              - DM
+              - DO
+              - DZ
+              - EC
+              - EE
+              - EG
+              - EH
+              - ER
+              - ES
+              - ET
+              - FI
+              - FJ
+              - FK
+              - FM
+              - FO
+              - FR
+              - GA
+              - GB
+              - GD
+              - GE
+              - GF
+              - GG
+              - GH
+              - GI
+              - GL
+              - GM
+              - GN
+              - GP
+              - GQ
+              - GR
+              - GS
+              - GU
+              - GW
+              - GY
+              - HK
+              - HN
+              - HR
+              - HT
+              - HU
+              - ID
+              - IE
+              - IL
+              - IM
+              - IN
+              - IO
+              - IQ
+              - IS
+              - IT
+              - JE
+              - JM
+              - JO
+              - JP
+              - KE
+              - KG
+              - KH
+              - KI
+              - KM
+              - KN
+              - KR
+              - KW
+              - KY
+              - KZ
+              - LA
+              - LB
+              - LC
+              - LI
+              - LK
+              - LR
+              - LS
+              - LT
+              - LU
+              - LV
+              - LY
+              - MA
+              - MC
+              - MD
+              - ME
+              - MF
+              - MG
+              - MH
+              - MK
+              - ML
+              - MM
+              - MN
+              - MO
+              - MP
+              - MQ
+              - MR
+              - MS
+              - MT
+              - MU
+              - MV
+              - MW
+              - MX
+              - MY
+              - MZ
+              - NA
+              - NC
+              - NE
+              - NF
+              - NG
+              - NI
+              - NL
+              - 'NO'
+              - NP
+              - NR
+              - NU
+              - NZ
+              - OM
+              - PA
+              - PE
+              - PF
+              - PG
+              - PH
+              - PK
+              - PL
+              - PM
+              - PN
+              - PR
+              - PS
+              - PT
+              - PW
+              - PY
+              - QA
+              - RE
+              - RO
+              - RS
+              - RU
+              - RW
+              - SA
+              - SB
+              - SC
+              - SE
+              - SG
+              - SH
+              - SI
+              - SJ
+              - SK
+              - SL
+              - SM
+              - SN
+              - SR
+              - SS
+              - ST
+              - SV
+              - SX
+              - SZ
+              - TC
+              - TD
+              - TF
+              - TG
+              - TH
+              - TJ
+              - TK
+              - TL
+              - TM
+              - TN
+              - TO
+              - TR
+              - TT
+              - TV
+              - TW
+              - TZ
+              - UA
+              - UG
+              - UM
+              - US
+              - UY
+              - UZ
+              - VA
+              - VC
+              - VE
+              - VG
+              - VI
+              - VN
+              - VU
+              - WF
+              - WS
+              - YE
+              - YT
+              - ZA
+              - ZM
+              - ZW
+            example: 'CA'                  
+          postalCode:
+            type: string
+            description: Postal code of the pickup address.
+            minLength: 0
+            maxLength: 20
+            example: 'test'                
+          email:
+            type: string
+            description: E-mail address of the pickup contact.
+            minLength: 0
+            maxLength: 100
+            example: 'test'                
+          phone:
+            type: string
+            description: Phone number of the pickup contact.
+            minLength: 0
+            maxLength: 20
+            example: 'test'                
+      packageDetail:
+        type: object
+        additionalProperties: false
+        required:
+          - packageId
+          - weight
+        properties:
+          packageId:
+            type: string
+            description: Unique reference ID for shipment. Also referred to as Customer Confirmation Number.
+            minLength: 1
+            maxLength: 30
+            pattern: '^[a-zA-Z0-9]([a-zA-Z0-9_.\-]*[a-zA-Z0-9])?$'
+            example: 'V4-TEST-12345'
+          packageDescription:
+            type: string
+            description: Description of the contents of the package.
+            minLength: 0
+            maxLength: 50
+            example: 'test'
+          packageReference:
+            type: string
+            description: A prefix that will be prepended to the human readable Package ID and display at the bottom of the label along with a barcode of the package ID.
+            minLength: 0
+            maxLength: 20
+            example: 'test'
+          weight:
             type: object
             additionalProperties: false
             required:
-              - address1
-              - country
-              - city
+              - value
+              - unitOfMeasure
             properties:
-              name:
+              value:
+                type: number
+                format: float
+                minimum: 0
+                maximum: 999999999
+                description: Total package weight.
+                example: 1
+              unitOfMeasure:
                 type: string
-                description: Name of consignee.
-                minLength: 0
-                maxLength: 30
-                pattern: '^$|.*[^\s].*'
-                example: 'test'                
-              companyName:
-                type: string
-                description: Company name of consignee.
-                minLength: 0
-                maxLength: 30
-                pattern: '^$|.*[^\s].*'
-                example: null                
-              address1:
-                type: string
-                description: Address line 1 of consignee.
-                minLength: 1
-                maxLength: 50
-                pattern: '^$|.*[^\s].*'
-                example: 'test'                
-              address2:
-                type: string
-                description: Address line 2 of consignee.
-                minLength: 0
-                maxLength: 50
-                example: null                
-              address3:
-                type: string
-                description: Address line 3 of consignee.
-                minLength: 0
-                maxLength: 30
-                example: null                
-              city:
-                type: string
-                description: City of consignee.
-                minLength: 1
-                maxLength: 30
-                pattern: '^$|.*[^\s].*'
-                example: 'test'                
-              state:
-                type: string
-                description: State of consignee.
-                minLength: 0
-                maxLength: 20
-                example: 'GA'                
-              country:
-                type: string
-                description: Two-character ISO consignee address country code.
-                minLength: 2
-                maxLength: 2
+                description: Unit of measure for the weight.
                 enum:
-                  - AD
-                  - AE
-                  - AF
-                  - AG
-                  - AI
-                  - AL
-                  - AM
-                  - AO
-                  - AR
-                  - AS
-                  - AT
-                  - AU
-                  - AW
-                  - AZ
-                  - BA
-                  - BB
-                  - BD
-                  - BE
-                  - BF
-                  - BG
-                  - BH
-                  - BI
-                  - BJ
-                  - BL
-                  - BM
-                  - BN
-                  - BO
-                  - BQ
-                  - BR
-                  - BS
-                  - BT
-                  - BW
-                  - BY
-                  - BZ
-                  - CA
-                  - CC
-                  - CD
-                  - CF
-                  - CG
-                  - CH
-                  - CI
-                  - CK
-                  - CL
-                  - CM
-                  - CN
-                  - CO
-                  - CR
-                  - CV
-                  - CW
-                  - CX
-                  - CY
-                  - CZ
-                  - DE
-                  - DJ
-                  - DK
-                  - DM
-                  - DO
-                  - DZ
-                  - EC
-                  - EE
-                  - EG
-                  - EH
-                  - ER
-                  - ES
-                  - ET
-                  - FI
-                  - FJ
-                  - FK
-                  - FM
-                  - FO
-                  - FR
-                  - GA
-                  - GB
-                  - GD
-                  - GE
-                  - GF
-                  - GG
-                  - GH
-                  - GI
-                  - GL
-                  - GM
-                  - GN
-                  - GP
-                  - GQ
-                  - GR
-                  - GS
-                  - GU
-                  - GW
-                  - GY
-                  - HK
-                  - HN
-                  - HR
-                  - HT
-                  - HU
-                  - ID
-                  - IE
-                  - IL
-                  - IM
-                  - IN
-                  - IO
-                  - IQ
-                  - IS
-                  - IT
-                  - JE
-                  - JM
-                  - JO
-                  - JP
-                  - KE
-                  - KG
-                  - KH
-                  - KI
-                  - KM
-                  - KN
-                  - KR
-                  - KW
-                  - KY
-                  - KZ
-                  - LA
                   - LB
-                  - LC
-                  - LI
-                  - LK
-                  - LR
-                  - LS
-                  - LT
-                  - LU
-                  - LV
-                  - LY
-                  - MA
-                  - MC
-                  - MD
-                  - ME
-                  - MF
-                  - MG
-                  - MH
-                  - MK
-                  - ML
-                  - MM
-                  - MN
-                  - MO
-                  - MP
-                  - MQ
-                  - MR
-                  - MS
-                  - MT
-                  - MU
-                  - MV
-                  - MW
-                  - MX
-                  - MY
-                  - MZ
-                  - NA
-                  - NC
-                  - NE
-                  - NF
-                  - NG
-                  - NI
-                  - NL
-                  - 'NO'
-                  - NP
-                  - NR
-                  - NU
-                  - NZ
-                  - OM
-                  - PA
-                  - PE
-                  - PF
-                  - PG
-                  - PH
-                  - PK
-                  - PL
-                  - PM
-                  - PN
-                  - PR
-                  - PS
-                  - PT
-                  - PW
-                  - PY
-                  - QA
-                  - RE
-                  - RO
-                  - RS
-                  - RU
-                  - RW
-                  - SA
-                  - SB
-                  - SC
-                  - SE
-                  - SG
-                  - SH
-                  - SI
-                  - SJ
-                  - SK
-                  - SL
-                  - SM
-                  - SN
-                  - SR
-                  - SS
-                  - ST
-                  - SV
-                  - SX
-                  - SZ
-                  - TC
-                  - TD
-                  - TF
-                  - TG
-                  - TH
-                  - TJ
-                  - TK
-                  - TL
-                  - TM
-                  - TN
-                  - TO
-                  - TR
-                  - TT
-                  - TV
-                  - TW
-                  - TZ
-                  - UA
-                  - UG
-                  - UM
-                  - US
-                  - UY
-                  - UZ
-                  - VA
-                  - VC
-                  - VE
-                  - VG
-                  - VI
-                  - VN
-                  - VU
-                  - WF
-                  - WS
-                  - YE
-                  - YT
-                  - ZA
-                  - ZM
-                  - ZW
-                example: 'US'                  
-              postalCode:
-                type: string
-                description: Postal code of consignee.
-                minLength: 0
-                maxLength: 20
-                example: '30092'                
-              email:
-                type: string
-                description: E-mail address of consignee.
-                minLength: 0
-                maxLength: 100
-                example: null                
-              phone:
-                type: string
-                description: Phone number of consignee.
-                minLength: 0
-                maxLength: 20
-                example: null                
-              idNumber:
-                type: string
-                description: Identification number of consignee.
-                minLength: 0
-                maxLength: 30
-                example: null
-              idType:
-                type: integer
-                format: int32
-                description: Identification type of consignee. Please refer to our documentation site for a list valid values
-                minLength: 0
-                enum:
-                  - 1
-                  - 2
-                  - 3
-                  - 4
-                example: null
-          returnAddress:
-            type: object
-            additionalProperties: false
-            required:
-              - address1
-              - country
-              - city
-            properties:
-              name:
-                type: string
-                description: Name of person receiveing the returned package.
-                minLength: 0
-                maxLength: 30
-                pattern: '^$|.*[^\s].*'
-                example: 'test'                
-              companyName:
-                type: string
-                description: Company name receiveing the returned package.
-                minLength: 0
-                maxLength: 30
-                pattern: '^$|.*[^\s].*'
-                example: null                
-              address1:
-                type: string
-                description: Address line 1 of the return address.
-                minLength: 1
-                maxLength: 50
-                pattern: '^$|.*[^\s].*'
-                example: 'test'                
-              address2:
-                type: string
-                description: Address line 2 of the return address.
-                minLength: 0
-                maxLength: 50
-                example: null                
-              address3:
-                type: string
-                description: Address line 3 of the return address.
-                minLength: 0
-                maxLength: 30
-                example: null                
-              city:
-                type: string
-                description: City of the return address.
-                minLength: 1
-                maxLength: 30
-                pattern: '^$|.*[^\s].*'
-                example: 'test'                
-              state:
-                type: string
-                description: State of the return address.
-                minLength: 0
-                maxLength: 20
-                example: 'GA'                
-              country:
-                type: string
-                description: Two-character ISO return address country code.
-                minLength: 2
-                maxLength: 2
-                enum:
-                  - AD
-                  - AE
-                  - AF
-                  - AG
-                  - AI
-                  - AL
-                  - AM
-                  - AO
-                  - AR
-                  - AS
-                  - AT
-                  - AU
-                  - AW
-                  - AZ
-                  - BA
-                  - BB
-                  - BD
-                  - BE
-                  - BF
-                  - BG
-                  - BH
-                  - BI
-                  - BJ
-                  - BL
-                  - BM
-                  - BN
-                  - BO
-                  - BQ
-                  - BR
-                  - BS
-                  - BT
-                  - BW
-                  - BY
-                  - BZ
-                  - CA
-                  - CC
-                  - CD
-                  - CF
-                  - CG
-                  - CH
-                  - CI
-                  - CK
-                  - CL
-                  - CM
-                  - CN
-                  - CO
-                  - CR
-                  - CV
-                  - CW
-                  - CX
-                  - CY
-                  - CZ
-                  - DE
-                  - DJ
-                  - DK
-                  - DM
-                  - DO
-                  - DZ
-                  - EC
-                  - EE
-                  - EG
-                  - EH
-                  - ER
-                  - ES
-                  - ET
-                  - FI
-                  - FJ
-                  - FK
-                  - FM
-                  - FO
-                  - FR
-                  - GA
-                  - GB
-                  - GD
-                  - GE
-                  - GF
-                  - GG
-                  - GH
-                  - GI
-                  - GL
-                  - GM
-                  - GN
-                  - GP
-                  - GQ
-                  - GR
-                  - GS
-                  - GU
-                  - GW
-                  - GY
-                  - HK
-                  - HN
-                  - HR
-                  - HT
-                  - HU
-                  - ID
-                  - IE
-                  - IL
-                  - IM
-                  - IN
-                  - IO
-                  - IQ
-                  - IS
-                  - IT
-                  - JE
-                  - JM
-                  - JO
-                  - JP
-                  - KE
+                  - OZ
                   - KG
-                  - KH
-                  - KI
-                  - KM
-                  - KN
-                  - KR
-                  - KW
-                  - KY
-                  - KZ
-                  - LA
-                  - LB
-                  - LC
-                  - LI
-                  - LK
-                  - LR
-                  - LS
-                  - LT
-                  - LU
-                  - LV
-                  - LY
-                  - MA
-                  - MC
-                  - MD
-                  - ME
-                  - MF
-                  - MG
-                  - MH
-                  - MK
-                  - ML
-                  - MM
-                  - MN
-                  - MO
-                  - MP
-                  - MQ
-                  - MR
-                  - MS
-                  - MT
-                  - MU
-                  - MV
-                  - MW
-                  - MX
-                  - MY
-                  - MZ
-                  - NA
-                  - NC
-                  - NE
-                  - NF
-                  - NG
-                  - NI
-                  - NL
-                  - 'NO'
-                  - NP
-                  - NR
-                  - NU
-                  - NZ
-                  - OM
-                  - PA
-                  - PE
-                  - PF
-                  - PG
-                  - PH
-                  - PK
-                  - PL
-                  - PM
-                  - PN
-                  - PR
-                  - PS
-                  - PT
-                  - PW
-                  - PY
-                  - QA
-                  - RE
-                  - RO
-                  - RS
-                  - RU
-                  - RW
-                  - SA
-                  - SB
-                  - SC
-                  - SE
-                  - SG
-                  - SH
-                  - SI
-                  - SJ
-                  - SK
-                  - SL
-                  - SM
-                  - SN
-                  - SR
-                  - SS
-                  - ST
-                  - SV
-                  - SX
-                  - SZ
-                  - TC
-                  - TD
-                  - TF
-                  - TG
-                  - TH
-                  - TJ
-                  - TK
-                  - TL
-                  - TM
-                  - TN
-                  - TO
-                  - TR
-                  - TT
-                  - TV
-                  - TW
-                  - TZ
-                  - UA
-                  - UG
-                  - UM
-                  - US
-                  - UY
-                  - UZ
-                  - VA
-                  - VC
-                  - VE
-                  - VG
-                  - VI
-                  - VN
-                  - VU
-                  - WF
-                  - WS
-                  - YE
-                  - YT
-                  - ZA
-                  - ZM
-                  - ZW
-                example: 'US'                  
-              postalCode:
-                type: string
-                description: Postal code of the return address.
-                minLength: 0
-                maxLength: 20
-                example: '30092'                
-              email:
-                type: string
-                description: E-mail address for the return.
-                minLength: 0
-                maxLength: 100
-                example: null                
-              phone:
-                type: string
-                description: Phone number for the return.
-                minLength: 0
-                maxLength: 20
-                example: null                
-          shipperAddress:
+                  - G
+                example: 'OZ'
+          dimension:
             type: object
             additionalProperties: false
             required:
-              - address1
-              - country
-              - city
-            example: null
+              - unitOfMeasure
+              - length
+              - width
+              - height
             properties:
-              name:
+              length:
+                type: number
+                format: float
+                minimum: 0
+                maximum: 999999999
+                description: Length of the package.
+                example: 1
+              width:
+                type: number
+                format: float
+                minimum: 0
+                maximum: 999999999
+                description: Width of the package.
+              height:
+                type: number
+                format: float
+                minimum: 0
+                maximum: 999999999
+                description: Height of the package.
+              unitOfMeasure:
                 type: string
-                description: Name of shipper.
-                minLength: 0
-                maxLength: 30
-                pattern: '^$|.*[^\s].*'
-                example: 'test'                
-              companyName:
-                type: string
-                description: Company name of shipper.
-                minLength: 0
-                maxLength: 30
-                pattern: '^$|.*[^\s].*'
-                example: null                
-              address1:
-                type: string
-                description: Address line 1 of shipper.
-                minLength: 1
-                maxLength: 50
-                pattern: '^$|.*[^\s].*'
-                example: 'test'                
-              address2:
-                type: string
-                description: Address line 2 of shipper.
-                minLength: 0
-                maxLength: 50
-                example: null                
-              address3:
-                type: string
-                description: Address line 3 of shipper.
-                minLength: 0
-                maxLength: 30
-                example: null                
-              city:
-                type: string
-                description: City of shipper.
-                minLength: 1
-                maxLength: 30
-                pattern: '^$|.*[^\s].*'
-                example: 'test'                
-              state:
-                type: string
-                description: State of shipper.
-                minLength: 0
-                maxLength: 20
-                example: 'GA'                
-              country:
-                type: string
-                description: Two-character ISO shipper address country code.
-                minLength: 2
-                maxLength: 2
+                description: Unit of measure for dimensions.
                 enum:
-                  - AD
-                  - AE
-                  - AF
-                  - AG
-                  - AI
-                  - AL
-                  - AM
-                  - AO
-                  - AR
-                  - AS
-                  - AT
-                  - AU
-                  - AW
-                  - AZ
-                  - BA
-                  - BB
-                  - BD
-                  - BE
-                  - BF
-                  - BG
-                  - BH
-                  - BI
-                  - BJ
-                  - BL
-                  - BM
-                  - BN
-                  - BO
-                  - BQ
-                  - BR
-                  - BS
-                  - BT
-                  - BW
-                  - BY
-                  - BZ
-                  - CA
-                  - CC
-                  - CD
-                  - CF
-                  - CG
-                  - CH
-                  - CI
-                  - CK
-                  - CL
-                  - CM
-                  - CN
-                  - CO
-                  - CR
-                  - CV
-                  - CW
-                  - CX
-                  - CY
-                  - CZ
-                  - DE
-                  - DJ
-                  - DK
-                  - DM
-                  - DO
-                  - DZ
-                  - EC
-                  - EE
-                  - EG
-                  - EH
-                  - ER
-                  - ES
-                  - ET
-                  - FI
-                  - FJ
-                  - FK
-                  - FM
-                  - FO
-                  - FR
-                  - GA
-                  - GB
-                  - GD
-                  - GE
-                  - GF
-                  - GG
-                  - GH
-                  - GI
-                  - GL
-                  - GM
-                  - GN
-                  - GP
-                  - GQ
-                  - GR
-                  - GS
-                  - GU
-                  - GW
-                  - GY
-                  - HK
-                  - HN
-                  - HR
-                  - HT
-                  - HU
-                  - ID
-                  - IE
-                  - IL
-                  - IM
                   - IN
-                  - IO
-                  - IQ
-                  - IS
-                  - IT
-                  - JE
-                  - JM
-                  - JO
-                  - JP
-                  - KE
-                  - KG
-                  - KH
-                  - KI
-                  - KM
-                  - KN
-                  - KR
-                  - KW
-                  - KY
-                  - KZ
-                  - LA
-                  - LB
-                  - LC
-                  - LI
-                  - LK
-                  - LR
-                  - LS
-                  - LT
-                  - LU
-                  - LV
-                  - LY
-                  - MA
-                  - MC
-                  - MD
-                  - ME
-                  - MF
-                  - MG
-                  - MH
-                  - MK
-                  - ML
-                  - MM
-                  - MN
-                  - MO
-                  - MP
-                  - MQ
-                  - MR
-                  - MS
-                  - MT
-                  - MU
-                  - MV
-                  - MW
-                  - MX
-                  - MY
-                  - MZ
-                  - NA
-                  - NC
-                  - NE
-                  - NF
-                  - NG
-                  - NI
-                  - NL
-                  - 'NO'
-                  - NP
-                  - NR
-                  - NU
-                  - NZ
-                  - OM
-                  - PA
-                  - PE
-                  - PF
-                  - PG
-                  - PH
-                  - PK
-                  - PL
-                  - PM
-                  - PN
-                  - PR
-                  - PS
-                  - PT
-                  - PW
-                  - PY
-                  - QA
-                  - RE
-                  - RO
-                  - RS
-                  - RU
-                  - RW
-                  - SA
-                  - SB
-                  - SC
-                  - SE
-                  - SG
-                  - SH
-                  - SI
-                  - SJ
-                  - SK
-                  - SL
-                  - SM
-                  - SN
-                  - SR
-                  - SS
-                  - ST
-                  - SV
-                  - SX
-                  - SZ
-                  - TC
-                  - TD
-                  - TF
-                  - TG
-                  - TH
-                  - TJ
-                  - TK
-                  - TL
-                  - TM
-                  - TN
-                  - TO
-                  - TR
-                  - TT
-                  - TV
-                  - TW
-                  - TZ
-                  - UA
-                  - UG
-                  - UM
-                  - US
-                  - UY
-                  - UZ
-                  - VA
-                  - VC
-                  - VE
-                  - VG
-                  - VI
-                  - VN
-                  - VU
-                  - WF
-                  - WS
-                  - YE
-                  - YT
-                  - ZA
-                  - ZM
-                  - ZW
-                example: 'US'                  
-              postalCode:
-                type: string
-                description: Postal code of the shipper address.
-                minLength: 0
-                maxLength: 20
-                example: '30092'                
-              email:
-                type: string
-                description: E-mail address of the shipper.
-                minLength: 0
-                maxLength: 100
-                example: null                
-              phone:
-                type: string
-                description: Phone number of the shipper.
-                minLength: 0
-                maxLength: 20
-                example: null                
-          pickupAddress:
-            type: object
-            additionalProperties: false
-            required:
-              - address1
-              - country
-              - city
-            example: null              
-            properties:
-              name:
-                type: string
-                description: Name of pickup contact.
-                minLength: 0
-                maxLength: 30
-                pattern: '^$|.*[^\s].*'
-                example: 'test'                
-              companyName:
-                type: string
-                description: Company name of pickup contact.
-                minLength: 0
-                maxLength: 30
-                pattern: '^$|.*[^\s].*'
-                example: null                
-              address1:
-                type: string
-                description: Address line 1 of pickup address.
-                minLength: 1
-                maxLength: 50
-                pattern: '^$|.*[^\s].*'
-                example: 'test'                
-              address2:
-                type: string
-                description: Address line 2 of pickup address.
-                minLength: 0
-                maxLength: 50
-                example: null                
-              address3:
-                type: string
-                description: Address line 3 of pickup address.
-                minLength: 0
-                maxLength: 30
-                example: null                
-              city:
-                type: string
-                description: City of pickup address.
-                minLength: 1
-                maxLength: 30
-                pattern: '^$|.*[^\s].*'
-                example: 'test'                
-              state:
-                type: string
-                description: State of pickup address.
-                minLength: 0
-                maxLength: 20
-                example: 'GA'                
-              country:
-                type: string
-                description: Two-character ISO pickup address country code.
-                minLength: 2
-                maxLength: 2
-                enum:
-                  - AD
-                  - AE
-                  - AF
-                  - AG
-                  - AI
-                  - AL
-                  - AM
-                  - AO
-                  - AR
-                  - AS
-                  - AT
-                  - AU
-                  - AW
-                  - AZ
-                  - BA
-                  - BB
-                  - BD
-                  - BE
-                  - BF
-                  - BG
-                  - BH
-                  - BI
-                  - BJ
-                  - BL
-                  - BM
-                  - BN
-                  - BO
-                  - BQ
-                  - BR
-                  - BS
-                  - BT
-                  - BW
-                  - BY
-                  - BZ
-                  - CA
-                  - CC
-                  - CD
-                  - CF
-                  - CG
-                  - CH
-                  - CI
-                  - CK
-                  - CL
                   - CM
-                  - CN
-                  - CO
-                  - CR
-                  - CV
-                  - CW
-                  - CX
-                  - CY
-                  - CZ
-                  - DE
-                  - DJ
-                  - DK
-                  - DM
-                  - DO
-                  - DZ
-                  - EC
-                  - EE
-                  - EG
-                  - EH
-                  - ER
-                  - ES
-                  - ET
-                  - FI
-                  - FJ
-                  - FK
-                  - FM
-                  - FO
-                  - FR
-                  - GA
-                  - GB
-                  - GD
-                  - GE
-                  - GF
-                  - GG
-                  - GH
-                  - GI
-                  - GL
-                  - GM
-                  - GN
-                  - GP
-                  - GQ
-                  - GR
-                  - GS
-                  - GU
-                  - GW
-                  - GY
-                  - HK
-                  - HN
-                  - HR
-                  - HT
-                  - HU
-                  - ID
-                  - IE
-                  - IL
-                  - IM
-                  - IN
-                  - IO
-                  - IQ
-                  - IS
-                  - IT
-                  - JE
-                  - JM
-                  - JO
-                  - JP
-                  - KE
-                  - KG
-                  - KH
-                  - KI
-                  - KM
-                  - KN
-                  - KR
-                  - KW
-                  - KY
-                  - KZ
-                  - LA
-                  - LB
-                  - LC
-                  - LI
-                  - LK
-                  - LR
-                  - LS
-                  - LT
-                  - LU
-                  - LV
-                  - LY
-                  - MA
-                  - MC
-                  - MD
-                  - ME
-                  - MF
-                  - MG
-                  - MH
-                  - MK
-                  - ML
-                  - MM
-                  - MN
-                  - MO
-                  - MP
-                  - MQ
-                  - MR
-                  - MS
-                  - MT
-                  - MU
-                  - MV
-                  - MW
-                  - MX
-                  - MY
-                  - MZ
-                  - NA
-                  - NC
-                  - NE
-                  - NF
-                  - NG
-                  - NI
-                  - NL
-                  - 'NO'
-                  - NP
-                  - NR
-                  - NU
-                  - NZ
-                  - OM
-                  - PA
-                  - PE
-                  - PF
-                  - PG
-                  - PH
-                  - PK
-                  - PL
-                  - PM
-                  - PN
-                  - PR
-                  - PS
-                  - PT
-                  - PW
-                  - PY
-                  - QA
-                  - RE
-                  - RO
-                  - RS
-                  - RU
-                  - RW
-                  - SA
-                  - SB
-                  - SC
-                  - SE
-                  - SG
-                  - SH
-                  - SI
-                  - SJ
-                  - SK
-                  - SL
-                  - SM
-                  - SN
-                  - SR
-                  - SS
-                  - ST
-                  - SV
-                  - SX
-                  - SZ
-                  - TC
-                  - TD
-                  - TF
-                  - TG
-                  - TH
-                  - TJ
-                  - TK
-                  - TL
-                  - TM
-                  - TN
-                  - TO
-                  - TR
-                  - TT
-                  - TV
-                  - TW
-                  - TZ
-                  - UA
-                  - UG
-                  - UM
-                  - US
-                  - UY
-                  - UZ
-                  - VA
-                  - VC
-                  - VE
-                  - VG
-                  - VI
-                  - VN
-                  - VU
-                  - WF
-                  - WS
-                  - YE
-                  - YT
-                  - ZA
-                  - ZM
-                  - ZW
-                example: 'US'                  
-              postalCode:
-                type: string
-                description: Postal code of the pickup address.
-                minLength: 0
-                maxLength: 20
-                example: '30092'                
-              email:
-                type: string
-                description: E-mail address of the pickup contact.
-                minLength: 0
-                maxLength: 100
-                example: null                
-              phone:
-                type: string
-                description: Phone number of the pickup contact.
-                minLength: 0
-                maxLength: 20
-                example: null                
-          packageDetail:
+                example: 'IN'
+          shippingCost:
             type: object
             additionalProperties: false
             required:
-              - packageId
-              - weight
+              - currency             
             properties:
-              packageId:
+              currency:
                 type: string
-                description: Unique reference ID for shipment. Also referred to as Customer Confirmation Number.
-                minLength: 1
-                maxLength: 30
-                pattern: '^[a-zA-Z0-9]([a-zA-Z0-9_.\-]*[a-zA-Z0-9])?$'
-                example: 'V4-TEST-12345'
-              packageDescription:
-                type: string
-                description: Description of the contents of the package.
-                minLength: 0
-                maxLength: 50
-                example: null
-              packageReference:
-                type: string
-                description: A prefix that will be prepended to the human readable Package ID and display at the bottom of the label along with a barcode of the package ID.
-                minLength: 0
-                maxLength: 20
-                example: null
-              weight:
-                type: object
-                additionalProperties: false
-                required:
-                  - value
-                  - unitOfMeasure
-                properties:
-                  value:
-                    type: number
-                    format: float
-                    minimum: 0
-                    maximum: 999999999
-                    description: Total package weight.
-                    example: 1
-                  unitOfMeasure:
-                    type: string
-                    description: Unit of measure for the weight.
-                    enum:
-                      - LB
-                      - OZ
-                      - KG
-                      - G
-                    example: 'OZ'
-              dimension:
-                type: object
-                additionalProperties: false
-                required:
-                  - unitOfMeasure
-                  - length
-                  - width
-                  - height
-                example: null
-                properties:
-                  length:
-                    type: number
-                    format: float
-                    minimum: 0
-                    maximum: 999999999
-                    description: Length of the package.
-                    example: 1
-                  width:
-                    type: number
-                    format: float
-                    minimum: 0
-                    maximum: 999999999
-                    description: Width of the package.
-                  height:
-                    type: number
-                    format: float
-                    minimum: 0
-                    maximum: 999999999
-                    description: Height of the package.
-                  unitOfMeasure:
-                    type: string
-                    description: Unit of measure for dimensions.
-                    enum:
-                      - IN
-                      - CM
-              shippingCost:
-                type: object
-                additionalProperties: false
-                required:
-                  - currency
-                example: null                  
-                properties:
-                  currency:
-                    type: string
-                    description: Three-character ISO Currency code.
-                    minLength: 3
-                    maxLength: 3
-                  tax:
-                    type: number
-                    format: float
-                    minimum: 0
-                    maximum: 999999999
-                    description: Tax charges for the package.
-                  freight:
-                    type: number
-                    format: float
-                    minimum: 0
-                    maximum: 999999999
-                    description: Freight charges for the package.
-                  duty:
-                    type: number
-                    format: float
-                    minimum: 0
-                    maximum: 999999999
-                    description: Duty charges for the package.
-                  cashOnDelivery:
-                    type: number
-                    format: float
-                    minimum: 0
-                    maximum: 999999999
-                    description: Amount to collect upon delivery of goods.
-                  declaredValue:
-                    type: number
-                    format: float
-                    minimum: 0
-                    maximum: 999999999
-                    description: 'Total declared value for the package. While not mandatory, best practice is to provide if available'
-                  insuredValue:
-                    type: number
-                    format: float
-                    minimum: 0
-                    maximum: 999999999
-                    description: Total insured value of the package.
-                  dutiesPaid:
-                    type: boolean
-                    description: If duties and taxes for the shipment are paid by the shipper. International reference DDU or DDP.
-              contentCategory:
-                type: string
-                description: 'Identifies the DHLeCS dangerous goods category code. DHLeCS accepts two types of Dangerous Goods; these are Lithium batteries and ORM-D material which stands for other regulated materials for domestic transport only. While some sub-categories of Lithium batteries can be transported via the DHLeCS expedited air network, ORM-D materials are only allowed for ground transportation. Please refer to our documentation site for a list valid values'
-                minLength: 2
-                maxLength: 2
-                enum:
-                - '01'
-                - '02'
-                - '03'
-                - '04'
-                - '05'
-                - '06'
-                - '07'
-                - '08'
-                - '09'
-                - '40'
-                example: null
-              service:
-                type: string
-                description: 'Shipments orginating and destined to the United States will default to DELCON. Signature confirmation* is also available for certain products at an additional cost (please contact your Sales representative for more details). International shipments will default to the tracking capabilties available to the product/service selected. Shipment tracking is available for all parcel products. Tracking is available through the DHLeCS web portal, or through the USPS tracking site. For Domestic shipments: DELCON, or SIGCON. Leave blank for International shipments'
-                minLength: 0
-                enum:
-                  - DELCON
-                  - SIGCON
-                example: null
-              serviceEndorsement:
-                type: string
-                description: "Ancillary service endorsements are used to request an addressee\x92s new address and to provide the USPS with instructions on how to handle undeliverable-as-addressed pieces. The endorsements are the same for all classes of US Domestic mail, but the treatment and cost differ by class of mail. Use of an ancillary service endorsement on a mailpiece obligates the mailer to pay any applicable charges for forwarding, return, and separate address notification charges. Please refer to our documentation site for a list valid values"
-                minLength: 0
-                maxLength: 1
-                enum:
-                  - '1'
-                  - '2'
-                  - '3'
-                  - '4'
-                example: null
-              billingReference1:
-                type: string
-                description: String of characters that can be used to aggregate billing data (may not be unique per parcel). billingReference1 is also referred to as Reference
-                minLength: 0
-                maxLength: 30
-                example: null
-              billingReference2:
-                type: string
-                description: Secondary string of characters that can be used to aggregate billing data (may not be unique per parcel). billingReference2 is also referred to as Batch.
-                minLength: 0
-                maxLength: 30
-                example: null
-          customsDetails:
-            type: array
-            example: null
-            items:
-              type: object
-              additionalProperties: false
-              properties:
-                skuNumber:
-                  type: string
-                  description: 'SKU #, or item code - Used for product verification on clients website during customs clearance process.'
-                  minLength: 0
-                  maxLength: 20
-                  example: null
-                itemDescription:
-                  type: string
-                  description: Detailed description of the commodity item - Used for customs clearance. Accuracy and Detail are required.
-                  minLength: 0
-                  maxLength: 50
-                  example: null                  
-                countryOfOrigin:
-                  type: string
-                  description: Two-Character Country Code for Origin Manufacturer Country of the product.
-                  minLength: 2
-                  maxLength: 2
-                  enum:
-                    - AD
-                    - AE
-                    - AF
-                    - AG
-                    - AI
-                    - AL
-                    - AM
-                    - AO
-                    - AR
-                    - AS
-                    - AT
-                    - AU
-                    - AW
-                    - AZ
-                    - BA
-                    - BB
-                    - BD
-                    - BE
-                    - BF
-                    - BG
-                    - BH
-                    - BI
-                    - BJ
-                    - BL
-                    - BM
-                    - BN
-                    - BO
-                    - BQ
-                    - BR
-                    - BS
-                    - BT
-                    - BW
-                    - BY
-                    - BZ
-                    - CA
-                    - CC
-                    - CD
-                    - CF
-                    - CG
-                    - CH
-                    - CI
-                    - CK
-                    - CL
-                    - CM
-                    - CN
-                    - CO
-                    - CR
-                    - CV
-                    - CW
-                    - CX
-                    - CY
-                    - CZ
-                    - DE
-                    - DJ
-                    - DK
-                    - DM
-                    - DO
-                    - DZ
-                    - EC
-                    - EE
-                    - EG
-                    - EH
-                    - ER
-                    - ES
-                    - ET
-                    - FI
-                    - FJ
-                    - FK
-                    - FM
-                    - FO
-                    - FR
-                    - GA
-                    - GB
-                    - GD
-                    - GE
-                    - GF
-                    - GG
-                    - GH
-                    - GI
-                    - GL
-                    - GM
-                    - GN
-                    - GP
-                    - GQ
-                    - GR
-                    - GS
-                    - GU
-                    - GW
-                    - GY
-                    - HK
-                    - HN
-                    - HR
-                    - HT
-                    - HU
-                    - ID
-                    - IE
-                    - IL
-                    - IM
-                    - IN
-                    - IO
-                    - IQ
-                    - IS
-                    - IT
-                    - JE
-                    - JM
-                    - JO
-                    - JP
-                    - KE
-                    - KG
-                    - KH
-                    - KI
-                    - KM
-                    - KN
-                    - KR
-                    - KW
-                    - KY
-                    - KZ
-                    - LA
-                    - LB
-                    - LC
-                    - LI
-                    - LK
-                    - LR
-                    - LS
-                    - LT
-                    - LU
-                    - LV
-                    - LY
-                    - MA
-                    - MC
-                    - MD
-                    - ME
-                    - MF
-                    - MG
-                    - MH
-                    - MK
-                    - ML
-                    - MM
-                    - MN
-                    - MO
-                    - MP
-                    - MQ
-                    - MR
-                    - MS
-                    - MT
-                    - MU
-                    - MV
-                    - MW
-                    - MX
-                    - MY
-                    - MZ
-                    - NA
-                    - NC
-                    - NE
-                    - NF
-                    - NG
-                    - NI
-                    - NL
-                    - 'NO'
-                    - NP
-                    - NR
-                    - NU
-                    - NZ
-                    - OM
-                    - PA
-                    - PE
-                    - PF
-                    - PG
-                    - PH
-                    - PK
-                    - PL
-                    - PM
-                    - PN
-                    - PR
-                    - PS
-                    - PT
-                    - PW
-                    - PY
-                    - QA
-                    - RE
-                    - RO
-                    - RS
-                    - RU
-                    - RW
-                    - SA
-                    - SB
-                    - SC
-                    - SE
-                    - SG
-                    - SH
-                    - SI
-                    - SJ
-                    - SK
-                    - SL
-                    - SM
-                    - SN
-                    - SR
-                    - SS
-                    - ST
-                    - SV
-                    - SX
-                    - SZ
-                    - TC
-                    - TD
-                    - TF
-                    - TG
-                    - TH
-                    - TJ
-                    - TK
-                    - TL
-                    - TM
-                    - TN
-                    - TO
-                    - TR
-                    - TT
-                    - TV
-                    - TW
-                    - TZ
-                    - UA
-                    - UG
-                    - UM
-                    - US
-                    - UY
-                    - UZ
-                    - VA
-                    - VC
-                    - VE
-                    - VG
-                    - VI
-                    - VN
-                    - VU
-                    - WF
-                    - WS
-                    - YE
-                    - YT
-                    - ZA
-                    - ZM
-                    - ZW
-                  example: null                    
-                hsCode:
-                  type: string
-                  description: Harmonized Tariff Schedule is a number assigned to every possible commodity that can be imported or exported from any country. Please do not include any decimals "." in this field.
-                  minLength: 6
-                  maxLength: 20
-                  example: null                  
-                packagedQuantity:
-                  type: integer
-                  format: int32
-                  minimum: 0
-                  maximum: 999999999
-                  description: Quantity of the same item in the package.
-                  example: null
-                itemValue:
-                  type: number
-                  format: float
-                  minimum: 0
-                  maximum: 999999999
-                  description: Commercial value of the commodity (per each).
-                  example: null
+                description: Three-character ISO Currency code.
+                minLength: 3
+                maxLength: 3
+                example: 'USD'
+              tax:
+                type: number
+                format: float
+                minimum: 0
+                maximum: 999999999
+                description: Tax charges for the package.
+                example: 1
+              freight:
+                type: number
+                format: float
+                minimum: 0
+                maximum: 999999999
+                description: Freight charges for the package.
+                example: 1
+              duty:
+                type: number
+                format: float
+                minimum: 0
+                maximum: 999999999
+                description: Duty charges for the package.
+                example: 1
+              cashOnDelivery:
+                type: number
+                format: float
+                minimum: 0
+                maximum: 999999999
+                description: Amount to collect upon delivery of goods.
+                example: 1
+              declaredValue:
+                type: number
+                format: float
+                minimum: 0
+                maximum: 999999999
+                description: 'Total declared value for the package. While not mandatory, best practice is to provide if available'
+                example: 1
+              insuredValue:
+                type: number
+                format: float
+                minimum: 0
+                maximum: 999999999
+                description: Total insured value of the package.
+                example: 1
+              dutiesPaid:
+                type: boolean
+                description: If duties and taxes for the shipment are paid by the shipper. International reference DDU or DDP.
+                example: false
+          contentCategory:
+            type: string
+            description: 'Identifies the DHLeCS dangerous goods category code. DHLeCS accepts two types of Dangerous Goods; these are Lithium batteries and ORM-D material which stands for other regulated materials for domestic transport only. While some sub-categories of Lithium batteries can be transported via the DHLeCS expedited air network, ORM-D materials are only allowed for ground transportation. Please refer to our documentation site for a list valid values'
+            minLength: 2
+            maxLength: 2
+            enum:
+            - '01'
+            - '02'
+            - '03'
+            - '04'
+            - '05'
+            - '06'
+            - '07'
+            - '08'
+            - '09'
+            - '40'
+            example: '01'
+          service:
+            type: string
+            description: 'Shipments orginating and destined to the United States will default to DELCON. Signature confirmation* is also available for certain products at an additional cost (please contact your Sales representative for more details). International shipments will default to the tracking capabilties available to the product/service selected. Shipment tracking is available for all parcel products. Tracking is available through the DHLeCS web portal, or through the USPS tracking site. For Domestic shipments: DELCON, or SIGCON. Leave blank for International shipments'
+            minLength: 0
+            enum:
+              - DELCON
+              - SIGCON
+            example: 'DELCON'
+          serviceEndorsement:
+            type: string
+            description: "Ancillary service endorsements are used to request an addressee\x92s new address and to provide the USPS with instructions on how to handle undeliverable-as-addressed pieces. The endorsements are the same for all classes of US Domestic mail, but the treatment and cost differ by class of mail. Use of an ancillary service endorsement on a mailpiece obligates the mailer to pay any applicable charges for forwarding, return, and separate address notification charges. Please refer to our documentation site for a list valid values"
+            minLength: 0
+            maxLength: 1
+            enum:
+              - '1'
+              - '2'
+              - '3'
+              - '4'
+            example: '1'
+          billingReference1:
+            type: string
+            description: String of characters that can be used to aggregate billing data (may not be unique per parcel). billingReference1 is also referred to as Reference
+            minLength: 0
+            maxLength: 30
+            example: 'test'
+          billingReference2:
+            type: string
+            description: Secondary string of characters that can be used to aggregate billing data (may not be unique per parcel). billingReference2 is also referred to as Batch.
+            minLength: 0
+            maxLength: 30
+            example: 'test'
+      customsDetails:
+        type: array
+        items:
+          type: object
+          required:
+            - currency
+          additionalProperties: false
+          properties:
+            currency:
+              type: string
+              description: Three-character ISO Currency code.
+              minLength: 3
+              maxLength: 3 
+              example: 'USD'           
+            skuNumber:
+              type: string
+              description: 'SKU #, or item code - Used for product verification on clients website during customs clearance process.'
+              minLength: 0
+              maxLength: 20
+              example: 'test'
+            itemDescription:
+              type: string
+              description: Detailed description of the commodity item - Used for customs clearance. Accuracy and Detail are required.
+              minLength: 0
+              maxLength: 50
+              example: 'test'                  
+            countryOfOrigin:
+              type: string
+              description: Two-Character Country Code for Origin Manufacturer Country of the product.
+              minLength: 2
+              maxLength: 2
+              enum:
+                - AD
+                - AE
+                - AF
+                - AG
+                - AI
+                - AL
+                - AM
+                - AO
+                - AR
+                - AS
+                - AT
+                - AU
+                - AW
+                - AZ
+                - BA
+                - BB
+                - BD
+                - BE
+                - BF
+                - BG
+                - BH
+                - BI
+                - BJ
+                - BL
+                - BM
+                - BN
+                - BO
+                - BQ
+                - BR
+                - BS
+                - BT
+                - BW
+                - BY
+                - BZ
+                - CA
+                - CC
+                - CD
+                - CF
+                - CG
+                - CH
+                - CI
+                - CK
+                - CL
+                - CM
+                - CN
+                - CO
+                - CR
+                - CV
+                - CW
+                - CX
+                - CY
+                - CZ
+                - DE
+                - DJ
+                - DK
+                - DM
+                - DO
+                - DZ
+                - EC
+                - EE
+                - EG
+                - EH
+                - ER
+                - ES
+                - ET
+                - FI
+                - FJ
+                - FK
+                - FM
+                - FO
+                - FR
+                - GA
+                - GB
+                - GD
+                - GE
+                - GF
+                - GG
+                - GH
+                - GI
+                - GL
+                - GM
+                - GN
+                - GP
+                - GQ
+                - GR
+                - GS
+                - GU
+                - GW
+                - GY
+                - HK
+                - HN
+                - HR
+                - HT
+                - HU
+                - ID
+                - IE
+                - IL
+                - IM
+                - IN
+                - IO
+                - IQ
+                - IS
+                - IT
+                - JE
+                - JM
+                - JO
+                - JP
+                - KE
+                - KG
+                - KH
+                - KI
+                - KM
+                - KN
+                - KR
+                - KW
+                - KY
+                - KZ
+                - LA
+                - LB
+                - LC
+                - LI
+                - LK
+                - LR
+                - LS
+                - LT
+                - LU
+                - LV
+                - LY
+                - MA
+                - MC
+                - MD
+                - ME
+                - MF
+                - MG
+                - MH
+                - MK
+                - ML
+                - MM
+                - MN
+                - MO
+                - MP
+                - MQ
+                - MR
+                - MS
+                - MT
+                - MU
+                - MV
+                - MW
+                - MX
+                - MY
+                - MZ
+                - NA
+                - NC
+                - NE
+                - NF
+                - NG
+                - NI
+                - NL
+                - 'NO'
+                - NP
+                - NR
+                - NU
+                - NZ
+                - OM
+                - PA
+                - PE
+                - PF
+                - PG
+                - PH
+                - PK
+                - PL
+                - PM
+                - PN
+                - PR
+                - PS
+                - PT
+                - PW
+                - PY
+                - QA
+                - RE
+                - RO
+                - RS
+                - RU
+                - RW
+                - SA
+                - SB
+                - SC
+                - SE
+                - SG
+                - SH
+                - SI
+                - SJ
+                - SK
+                - SL
+                - SM
+                - SN
+                - SR
+                - SS
+                - ST
+                - SV
+                - SX
+                - SZ
+                - TC
+                - TD
+                - TF
+                - TG
+                - TH
+                - TJ
+                - TK
+                - TL
+                - TM
+                - TN
+                - TO
+                - TR
+                - TT
+                - TV
+                - TW
+                - TZ
+                - UA
+                - UG
+                - UM
+                - US
+                - UY
+                - UZ
+                - VA
+                - VC
+                - VE
+                - VG
+                - VI
+                - VN
+                - VU
+                - WF
+                - WS
+                - YE
+                - YT
+                - ZA
+                - ZM
+                - ZW
+              example: 'US'                    
+            hsCode:
+              type: string
+              description: Harmonized Tariff Schedule is a number assigned to every possible commodity that can be imported or exported from any country. Please do not include any decimals "." in this field.
+              minLength: 6
+              maxLength: 20
+              example: '999999'                  
+            packagedQuantity:
+              type: integer
+              format: int32
+              minimum: 0
+              maximum: 9999
+              description: Quantity of the same item in the package.
+              example: 1
+            itemValue:
+              type: number
+              format: float
+              minimum: 0
+              maximum: 9999999999
+              description: Commercial value of the commodity (per each).
+              example: 1
   labelResponse:
     type: object
     properties:
@@ -2065,11 +2071,6 @@ definitions:
         description: DHLeCS three-character product code. Please refer to our documentation site for a list valid values
         minLength: 1
         maxLength: 10
-      mailType:
-        type: string
-        description: Identifies the mail type of the shipment. Refer to the mail type matrix for a list of valid mail types. Please refer to our documentation site for a list valid values
-        minLength: 1
-        maxLength: 2
       labels:
         type: array
         items:
@@ -2108,20 +2109,14 @@ definitions:
               type: string
               description: Either zpl or png depending on the label format requested
               enum:
-                - zpl
-                - png
+                - ZPL
+                - PNG
             link:
               type: string
               description: Link to the label
             labelDetail:
               type: object
               properties:
-                construct:
-                  type: string
-                  description: ''
-                stc:
-                  type: string
-                  description: ''
                 contentCategory:
                   type: string
                   description: ''
@@ -2215,7 +2210,7 @@ definitions:
         description: Status of the manifest request
         enum:
           - COMPLETE
-          - INPROGRESS
+          - IN_PROGRESS
       link:
         type: string
         description: The DHLeCS link that can be used to access the driver summary manifest documents once created.
@@ -2248,7 +2243,7 @@ definitions:
               type: string
               description: Encode type of the manifest document
               enum:
-                - base64
+                - BASE64
             format:
               type: string
               description: Manifest document format
@@ -2457,15 +2452,6 @@ definitions:
                 declaredValueCurrency:
                   type: string
                   description: Currency code for the declared value.
-                codAmount:
-                  type: string
-                  description: Cash on delivery value.
-                codCurrency:
-                  type: string
-                  description: Curreny code for the cash on delivery value.
-                codRemitTrackingNumber:
-                  type: string
-                  description: ''
                 batchReference:
                   type: string
                   description: ''
