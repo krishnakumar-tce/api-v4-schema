@@ -2248,7 +2248,7 @@ definitions:
               type: string
               description: Manifest document format
               enum:
-                - pdf
+                - PDF
       manifestSummary:
         type: object
         properties:
