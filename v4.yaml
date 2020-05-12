@@ -1,6 +1,6 @@
 swagger: '2.0'
 info:
-  description: 'DHL eCommerce Solutions (DHLeCS) [API services](https://api-bat.dhlecs.com/docs) are used to create, manifest, and track packages for domestic and international destinations.'
+  description: 'DHL eCommerce Solutions (DHLeCS) [API services](https://api-sandbox.dhlecs.com/docs) are used to create, manifest, and track packages for domestic and international destinations.'
   version: 4.0.0
   title: DHL eCommerce Solutions API Services
   termsOfService: ''
@@ -10,7 +10,7 @@ info:
 externalDocs:
   description: Find out more about DHLeCS
   url: 'https://www.logistics.dhl/us-en/home/our-divisions/ecommerce.html'
-host: api-bat.dhlecs.com
+host: api-sandbox.dhlecs.com
 basePath: /
 schemes:
   - https
@@ -19,7 +19,7 @@ securityDefinitions:
     type: oauth2
     description: OAuth2 secured area for tokens from Apigee.
     flow: application
-    tokenUrl: https://api-bat.dhlecs.com/auth/v4/accesstoken
+    tokenUrl: https://api-sandbox.dhlecs.com/auth/v4/accesstoken
 security:
   - oAuthSecurity: []
 tags: 
@@ -35,7 +35,7 @@ paths:
       tags:
         - label
       summary: Create a label
-      description: 'Create domestic and international labels in multiple formats: [ Label Services ](https://api-bat.dhlecs.com/docs/label)'
+      description: 'Create domestic and international labels in multiple formats: [ Label Services ](https://api-sandbox.dhlecs.com/docs/label)'
       operationId: createLabel
       consumes:
         - application/json
@@ -68,7 +68,7 @@ paths:
       tags:
         - label
       summary: Get a label
-      description: 'Retrieve a previously created label: [ Label Services ](https://api-bat.dhlecs.com/docs/label)'
+      description: 'Retrieve a previously created label: [ Label Services ](https://api-sandbox.dhlecs.com/docs/label)'
       operationId: getLabel
       produces:
         - application/json
@@ -106,7 +106,7 @@ paths:
       tags:
         - manifest
       summary: Create a manifest
-      description: 'Manifest selected packages or all packages: [ Manifest Services ](https://api-bat.dhlecs.com/docs/manifest)'
+      description: 'Manifest selected packages or all packages: [ Manifest Services ](https://api-sandbox.dhlecs.com/docs/manifest)'
       operationId: createManifest
       consumes:
         - application/json
@@ -131,7 +131,7 @@ paths:
       tags:
         - manifest
       summary: Get a manifest document
-      description: 'Retrieve manifest document(s) that can be handed over at the time of pickup or drop-off: [ Manifest Services ](https://api-bat.dhlecs.com/docs/manifest)'
+      description: 'Retrieve manifest document(s) that can be handed over at the time of pickup or drop-off: [ Manifest Services ](https://api-sandbox.dhlecs.com/docs/manifest)'
       operationId: getManifest
       produces:
         - application/json
@@ -162,7 +162,7 @@ paths:
       tags:
         - tracking
       summary: Get tracking data for a package
-      description: 'Get tracking data for a package: [ Tracking Services ](https://api-bat.dhlecs.com/docs/tracking)'
+      description: 'Get tracking data for a package: [ Tracking Services ](https://api-sandbox.dhlecs.com/docs/tracking)'
       operationId: getPackage
       produces:
         - application/json
@@ -238,6 +238,76 @@ paths:
             $ref: '#/definitions/trackingResponse'
         '400':
           description: Invalid input.
+  '/transportation/v4/pickups':
+    post:
+      tags:
+        - pickup
+      summary: Create a Pickup label 
+      description: 'Create a Transportation Pickup request: [ Transportation Services ](https://api-sandbox.dhlecs.com/docs/transportation)'
+      operationId: createPickup
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Request Body
+          required: true
+          schema:
+            $ref: '#/definitions/pickupRequest'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/pickupPostResponse'
+        '400':
+          description: Invalid input  
+  '/transportation/v4/pickups/{shipmentIdentifier}':
+    get:
+      tags:
+        - pickup
+      summary: Get Transportation Pickup request
+      description: 'Retrieve Transportation Pickup details [ Transportation Services ](https://api-sandbox.dhlecs.com/docs/transportation)'
+      operationId: getPickup
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: shipmentIdentifier
+          type: string
+          required: true
+          description: DHLeCS shipment identifier.
+          minLength: 1
+          maxLength: 30
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/pickupGetResponse'
+        '400':
+          description: Invalid input
+    delete:
+      tags:
+        - pickup
+      summary: Delete a pickup request
+      description: 'Delete a previously scheduled pickup request [ Transportation Services ](https://api-sandbox.dhlecs.com/docs/transportation)'
+      operationId: deletePickup
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: shipmentIdentifier
+          type: string
+          required: true
+          description: The DHLeCS shiment identifier (BOL Number).
+          minLength: 1
+          maxLength: 30
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Invalid input        
 definitions:
   labelRequest:
     type: object
@@ -256,7 +326,7 @@ definitions:
         minLength: 1
         maxLength: 10
         pattern: '^[\S]+$'
-        example: '5320037'          
+        example: '5351244'          
       distributionCenter:
         type: string
         description: Primary DHLeCS Distribution center assigned to your products/services
@@ -273,15 +343,9 @@ definitions:
       orderedProductId:
         type: string
         description: DHLeCS three-character product code. Please refer to our documentation site for a list valid values
-        enum:
-          - MAX
-          - EXP
-          - GND
-          - BEX
-          - BGN
-          - PLT
-          - PLY
-          - PKY
+        minLength: 3
+        maxLength: 3
+        pattern: '^[A-Z]{3}$'
         example: 'PLT'
       consigneeAddress:
         type: object
@@ -342,245 +406,7 @@ definitions:
             description: Two-character ISO consignee address country code.
             minLength: 2
             maxLength: 2
-            enum:
-              - AD
-              - AE
-              - AF
-              - AG
-              - AI
-              - AL
-              - AM
-              - AO
-              - AR
-              - AS
-              - AT
-              - AU
-              - AW
-              - AZ
-              - BA
-              - BB
-              - BD
-              - BE
-              - BF
-              - BG
-              - BH
-              - BI
-              - BJ
-              - BL
-              - BM
-              - BN
-              - BO
-              - BQ
-              - BR
-              - BS
-              - BT
-              - BW
-              - BY
-              - BZ
-              - CA
-              - CC
-              - CD
-              - CF
-              - CG
-              - CH
-              - CI
-              - CK
-              - CL
-              - CM
-              - CN
-              - CO
-              - CR
-              - CV
-              - CW
-              - CX
-              - CY
-              - CZ
-              - DE
-              - DJ
-              - DK
-              - DM
-              - DO
-              - DZ
-              - EC
-              - EE
-              - EG
-              - EH
-              - ER
-              - ES
-              - ET
-              - FI
-              - FJ
-              - FK
-              - FM
-              - FO
-              - FR
-              - GA
-              - GB
-              - GD
-              - GE
-              - GF
-              - GG
-              - GH
-              - GI
-              - GL
-              - GM
-              - GN
-              - GP
-              - GQ
-              - GR
-              - GS
-              - GU
-              - GW
-              - GY
-              - HK
-              - HN
-              - HR
-              - HT
-              - HU
-              - ID
-              - IE
-              - IL
-              - IM
-              - IN
-              - IO
-              - IQ
-              - IS
-              - IT
-              - JE
-              - JM
-              - JO
-              - JP
-              - KE
-              - KG
-              - KH
-              - KI
-              - KM
-              - KN
-              - KR
-              - KW
-              - KY
-              - KZ
-              - LA
-              - LB
-              - LC
-              - LI
-              - LK
-              - LR
-              - LS
-              - LT
-              - LU
-              - LV
-              - LY
-              - MA
-              - MC
-              - MD
-              - ME
-              - MF
-              - MG
-              - MH
-              - MK
-              - ML
-              - MM
-              - MN
-              - MO
-              - MP
-              - MQ
-              - MR
-              - MS
-              - MT
-              - MU
-              - MV
-              - MW
-              - MX
-              - MY
-              - MZ
-              - NA
-              - NC
-              - NE
-              - NF
-              - NG
-              - NI
-              - NL
-              - 'NO'
-              - NP
-              - NR
-              - NU
-              - NZ
-              - OM
-              - PA
-              - PE
-              - PF
-              - PG
-              - PH
-              - PK
-              - PL
-              - PM
-              - PN
-              - PR
-              - PS
-              - PT
-              - PW
-              - PY
-              - QA
-              - RE
-              - RO
-              - RS
-              - RU
-              - RW
-              - SA
-              - SB
-              - SC
-              - SE
-              - SG
-              - SH
-              - SI
-              - SJ
-              - SK
-              - SL
-              - SM
-              - SN
-              - SR
-              - SS
-              - ST
-              - SV
-              - SX
-              - SZ
-              - TC
-              - TD
-              - TF
-              - TG
-              - TH
-              - TJ
-              - TK
-              - TL
-              - TM
-              - TN
-              - TO
-              - TR
-              - TT
-              - TV
-              - TW
-              - TZ
-              - UA
-              - UG
-              - UM
-              - US
-              - UY
-              - UZ
-              - VA
-              - VC
-              - VE
-              - VG
-              - VI
-              - VN
-              - VU
-              - WF
-              - WS
-              - YE
-              - YT
-              - ZA
-              - ZM
-              - ZW
+            pattern: '^[A-Z]{2}$'
             example: 'CA'                  
           postalCode:
             type: string
@@ -676,245 +502,7 @@ definitions:
             description: Two-character ISO return address country code.
             minLength: 2
             maxLength: 2
-            enum:
-              - AD
-              - AE
-              - AF
-              - AG
-              - AI
-              - AL
-              - AM
-              - AO
-              - AR
-              - AS
-              - AT
-              - AU
-              - AW
-              - AZ
-              - BA
-              - BB
-              - BD
-              - BE
-              - BF
-              - BG
-              - BH
-              - BI
-              - BJ
-              - BL
-              - BM
-              - BN
-              - BO
-              - BQ
-              - BR
-              - BS
-              - BT
-              - BW
-              - BY
-              - BZ
-              - CA
-              - CC
-              - CD
-              - CF
-              - CG
-              - CH
-              - CI
-              - CK
-              - CL
-              - CM
-              - CN
-              - CO
-              - CR
-              - CV
-              - CW
-              - CX
-              - CY
-              - CZ
-              - DE
-              - DJ
-              - DK
-              - DM
-              - DO
-              - DZ
-              - EC
-              - EE
-              - EG
-              - EH
-              - ER
-              - ES
-              - ET
-              - FI
-              - FJ
-              - FK
-              - FM
-              - FO
-              - FR
-              - GA
-              - GB
-              - GD
-              - GE
-              - GF
-              - GG
-              - GH
-              - GI
-              - GL
-              - GM
-              - GN
-              - GP
-              - GQ
-              - GR
-              - GS
-              - GU
-              - GW
-              - GY
-              - HK
-              - HN
-              - HR
-              - HT
-              - HU
-              - ID
-              - IE
-              - IL
-              - IM
-              - IN
-              - IO
-              - IQ
-              - IS
-              - IT
-              - JE
-              - JM
-              - JO
-              - JP
-              - KE
-              - KG
-              - KH
-              - KI
-              - KM
-              - KN
-              - KR
-              - KW
-              - KY
-              - KZ
-              - LA
-              - LB
-              - LC
-              - LI
-              - LK
-              - LR
-              - LS
-              - LT
-              - LU
-              - LV
-              - LY
-              - MA
-              - MC
-              - MD
-              - ME
-              - MF
-              - MG
-              - MH
-              - MK
-              - ML
-              - MM
-              - MN
-              - MO
-              - MP
-              - MQ
-              - MR
-              - MS
-              - MT
-              - MU
-              - MV
-              - MW
-              - MX
-              - MY
-              - MZ
-              - NA
-              - NC
-              - NE
-              - NF
-              - NG
-              - NI
-              - NL
-              - 'NO'
-              - NP
-              - NR
-              - NU
-              - NZ
-              - OM
-              - PA
-              - PE
-              - PF
-              - PG
-              - PH
-              - PK
-              - PL
-              - PM
-              - PN
-              - PR
-              - PS
-              - PT
-              - PW
-              - PY
-              - QA
-              - RE
-              - RO
-              - RS
-              - RU
-              - RW
-              - SA
-              - SB
-              - SC
-              - SE
-              - SG
-              - SH
-              - SI
-              - SJ
-              - SK
-              - SL
-              - SM
-              - SN
-              - SR
-              - SS
-              - ST
-              - SV
-              - SX
-              - SZ
-              - TC
-              - TD
-              - TF
-              - TG
-              - TH
-              - TJ
-              - TK
-              - TL
-              - TM
-              - TN
-              - TO
-              - TR
-              - TT
-              - TV
-              - TW
-              - TZ
-              - UA
-              - UG
-              - UM
-              - US
-              - UY
-              - UZ
-              - VA
-              - VC
-              - VE
-              - VG
-              - VI
-              - VN
-              - VU
-              - WF
-              - WS
-              - YE
-              - YT
-              - ZA
-              - ZM
-              - ZW
+            pattern: '^[A-Z]{2}$'
             example: 'CA'                  
           postalCode:
             type: string
@@ -993,245 +581,7 @@ definitions:
             description: Two-character ISO shipper address country code.
             minLength: 2
             maxLength: 2
-            enum:
-              - AD
-              - AE
-              - AF
-              - AG
-              - AI
-              - AL
-              - AM
-              - AO
-              - AR
-              - AS
-              - AT
-              - AU
-              - AW
-              - AZ
-              - BA
-              - BB
-              - BD
-              - BE
-              - BF
-              - BG
-              - BH
-              - BI
-              - BJ
-              - BL
-              - BM
-              - BN
-              - BO
-              - BQ
-              - BR
-              - BS
-              - BT
-              - BW
-              - BY
-              - BZ
-              - CA
-              - CC
-              - CD
-              - CF
-              - CG
-              - CH
-              - CI
-              - CK
-              - CL
-              - CM
-              - CN
-              - CO
-              - CR
-              - CV
-              - CW
-              - CX
-              - CY
-              - CZ
-              - DE
-              - DJ
-              - DK
-              - DM
-              - DO
-              - DZ
-              - EC
-              - EE
-              - EG
-              - EH
-              - ER
-              - ES
-              - ET
-              - FI
-              - FJ
-              - FK
-              - FM
-              - FO
-              - FR
-              - GA
-              - GB
-              - GD
-              - GE
-              - GF
-              - GG
-              - GH
-              - GI
-              - GL
-              - GM
-              - GN
-              - GP
-              - GQ
-              - GR
-              - GS
-              - GU
-              - GW
-              - GY
-              - HK
-              - HN
-              - HR
-              - HT
-              - HU
-              - ID
-              - IE
-              - IL
-              - IM
-              - IN
-              - IO
-              - IQ
-              - IS
-              - IT
-              - JE
-              - JM
-              - JO
-              - JP
-              - KE
-              - KG
-              - KH
-              - KI
-              - KM
-              - KN
-              - KR
-              - KW
-              - KY
-              - KZ
-              - LA
-              - LB
-              - LC
-              - LI
-              - LK
-              - LR
-              - LS
-              - LT
-              - LU
-              - LV
-              - LY
-              - MA
-              - MC
-              - MD
-              - ME
-              - MF
-              - MG
-              - MH
-              - MK
-              - ML
-              - MM
-              - MN
-              - MO
-              - MP
-              - MQ
-              - MR
-              - MS
-              - MT
-              - MU
-              - MV
-              - MW
-              - MX
-              - MY
-              - MZ
-              - NA
-              - NC
-              - NE
-              - NF
-              - NG
-              - NI
-              - NL
-              - 'NO'
-              - NP
-              - NR
-              - NU
-              - NZ
-              - OM
-              - PA
-              - PE
-              - PF
-              - PG
-              - PH
-              - PK
-              - PL
-              - PM
-              - PN
-              - PR
-              - PS
-              - PT
-              - PW
-              - PY
-              - QA
-              - RE
-              - RO
-              - RS
-              - RU
-              - RW
-              - SA
-              - SB
-              - SC
-              - SE
-              - SG
-              - SH
-              - SI
-              - SJ
-              - SK
-              - SL
-              - SM
-              - SN
-              - SR
-              - SS
-              - ST
-              - SV
-              - SX
-              - SZ
-              - TC
-              - TD
-              - TF
-              - TG
-              - TH
-              - TJ
-              - TK
-              - TL
-              - TM
-              - TN
-              - TO
-              - TR
-              - TT
-              - TV
-              - TW
-              - TZ
-              - UA
-              - UG
-              - UM
-              - US
-              - UY
-              - UZ
-              - VA
-              - VC
-              - VE
-              - VG
-              - VI
-              - VN
-              - VU
-              - WF
-              - WS
-              - YE
-              - YT
-              - ZA
-              - ZM
-              - ZW
+            pattern: '^[A-Z]{2}$'
             example: 'CA'                  
           postalCode:
             type: string
@@ -1310,245 +660,7 @@ definitions:
             description: Two-character ISO pickup address country code.
             minLength: 2
             maxLength: 2
-            enum:
-              - AD
-              - AE
-              - AF
-              - AG
-              - AI
-              - AL
-              - AM
-              - AO
-              - AR
-              - AS
-              - AT
-              - AU
-              - AW
-              - AZ
-              - BA
-              - BB
-              - BD
-              - BE
-              - BF
-              - BG
-              - BH
-              - BI
-              - BJ
-              - BL
-              - BM
-              - BN
-              - BO
-              - BQ
-              - BR
-              - BS
-              - BT
-              - BW
-              - BY
-              - BZ
-              - CA
-              - CC
-              - CD
-              - CF
-              - CG
-              - CH
-              - CI
-              - CK
-              - CL
-              - CM
-              - CN
-              - CO
-              - CR
-              - CV
-              - CW
-              - CX
-              - CY
-              - CZ
-              - DE
-              - DJ
-              - DK
-              - DM
-              - DO
-              - DZ
-              - EC
-              - EE
-              - EG
-              - EH
-              - ER
-              - ES
-              - ET
-              - FI
-              - FJ
-              - FK
-              - FM
-              - FO
-              - FR
-              - GA
-              - GB
-              - GD
-              - GE
-              - GF
-              - GG
-              - GH
-              - GI
-              - GL
-              - GM
-              - GN
-              - GP
-              - GQ
-              - GR
-              - GS
-              - GU
-              - GW
-              - GY
-              - HK
-              - HN
-              - HR
-              - HT
-              - HU
-              - ID
-              - IE
-              - IL
-              - IM
-              - IN
-              - IO
-              - IQ
-              - IS
-              - IT
-              - JE
-              - JM
-              - JO
-              - JP
-              - KE
-              - KG
-              - KH
-              - KI
-              - KM
-              - KN
-              - KR
-              - KW
-              - KY
-              - KZ
-              - LA
-              - LB
-              - LC
-              - LI
-              - LK
-              - LR
-              - LS
-              - LT
-              - LU
-              - LV
-              - LY
-              - MA
-              - MC
-              - MD
-              - ME
-              - MF
-              - MG
-              - MH
-              - MK
-              - ML
-              - MM
-              - MN
-              - MO
-              - MP
-              - MQ
-              - MR
-              - MS
-              - MT
-              - MU
-              - MV
-              - MW
-              - MX
-              - MY
-              - MZ
-              - NA
-              - NC
-              - NE
-              - NF
-              - NG
-              - NI
-              - NL
-              - 'NO'
-              - NP
-              - NR
-              - NU
-              - NZ
-              - OM
-              - PA
-              - PE
-              - PF
-              - PG
-              - PH
-              - PK
-              - PL
-              - PM
-              - PN
-              - PR
-              - PS
-              - PT
-              - PW
-              - PY
-              - QA
-              - RE
-              - RO
-              - RS
-              - RU
-              - RW
-              - SA
-              - SB
-              - SC
-              - SE
-              - SG
-              - SH
-              - SI
-              - SJ
-              - SK
-              - SL
-              - SM
-              - SN
-              - SR
-              - SS
-              - ST
-              - SV
-              - SX
-              - SZ
-              - TC
-              - TD
-              - TF
-              - TG
-              - TH
-              - TJ
-              - TK
-              - TL
-              - TM
-              - TN
-              - TO
-              - TR
-              - TT
-              - TV
-              - TW
-              - TZ
-              - UA
-              - UG
-              - UM
-              - US
-              - UY
-              - UZ
-              - VA
-              - VC
-              - VE
-              - VG
-              - VI
-              - VN
-              - VU
-              - WF
-              - WS
-              - YE
-              - YT
-              - ZA
-              - ZM
-              - ZW
+            pattern: '^[A-Z]{2}$'
             example: 'CA'                  
           postalCode:
             type: string
@@ -1722,7 +834,6 @@ definitions:
             - '04'
             - '05'
             - '06'
-            - '07'
             - '08'
             - '09'
             - '40'
@@ -1789,245 +900,7 @@ definitions:
               description: Two-Character Country Code for Origin Manufacturer Country of the product.
               minLength: 2
               maxLength: 2
-              enum:
-                - AD
-                - AE
-                - AF
-                - AG
-                - AI
-                - AL
-                - AM
-                - AO
-                - AR
-                - AS
-                - AT
-                - AU
-                - AW
-                - AZ
-                - BA
-                - BB
-                - BD
-                - BE
-                - BF
-                - BG
-                - BH
-                - BI
-                - BJ
-                - BL
-                - BM
-                - BN
-                - BO
-                - BQ
-                - BR
-                - BS
-                - BT
-                - BW
-                - BY
-                - BZ
-                - CA
-                - CC
-                - CD
-                - CF
-                - CG
-                - CH
-                - CI
-                - CK
-                - CL
-                - CM
-                - CN
-                - CO
-                - CR
-                - CV
-                - CW
-                - CX
-                - CY
-                - CZ
-                - DE
-                - DJ
-                - DK
-                - DM
-                - DO
-                - DZ
-                - EC
-                - EE
-                - EG
-                - EH
-                - ER
-                - ES
-                - ET
-                - FI
-                - FJ
-                - FK
-                - FM
-                - FO
-                - FR
-                - GA
-                - GB
-                - GD
-                - GE
-                - GF
-                - GG
-                - GH
-                - GI
-                - GL
-                - GM
-                - GN
-                - GP
-                - GQ
-                - GR
-                - GS
-                - GU
-                - GW
-                - GY
-                - HK
-                - HN
-                - HR
-                - HT
-                - HU
-                - ID
-                - IE
-                - IL
-                - IM
-                - IN
-                - IO
-                - IQ
-                - IS
-                - IT
-                - JE
-                - JM
-                - JO
-                - JP
-                - KE
-                - KG
-                - KH
-                - KI
-                - KM
-                - KN
-                - KR
-                - KW
-                - KY
-                - KZ
-                - LA
-                - LB
-                - LC
-                - LI
-                - LK
-                - LR
-                - LS
-                - LT
-                - LU
-                - LV
-                - LY
-                - MA
-                - MC
-                - MD
-                - ME
-                - MF
-                - MG
-                - MH
-                - MK
-                - ML
-                - MM
-                - MN
-                - MO
-                - MP
-                - MQ
-                - MR
-                - MS
-                - MT
-                - MU
-                - MV
-                - MW
-                - MX
-                - MY
-                - MZ
-                - NA
-                - NC
-                - NE
-                - NF
-                - NG
-                - NI
-                - NL
-                - 'NO'
-                - NP
-                - NR
-                - NU
-                - NZ
-                - OM
-                - PA
-                - PE
-                - PF
-                - PG
-                - PH
-                - PK
-                - PL
-                - PM
-                - PN
-                - PR
-                - PS
-                - PT
-                - PW
-                - PY
-                - QA
-                - RE
-                - RO
-                - RS
-                - RU
-                - RW
-                - SA
-                - SB
-                - SC
-                - SE
-                - SG
-                - SH
-                - SI
-                - SJ
-                - SK
-                - SL
-                - SM
-                - SN
-                - SR
-                - SS
-                - ST
-                - SV
-                - SX
-                - SZ
-                - TC
-                - TD
-                - TF
-                - TG
-                - TH
-                - TJ
-                - TK
-                - TL
-                - TM
-                - TN
-                - TO
-                - TR
-                - TT
-                - TV
-                - TW
-                - TZ
-                - UA
-                - UG
-                - UM
-                - US
-                - UY
-                - UZ
-                - VA
-                - VC
-                - VE
-                - VG
-                - VI
-                - VN
-                - VU
-                - WF
-                - WS
-                - YE
-                - YT
-                - ZA
-                - ZM
-                - ZW
+              pattern: '^[A-Z]{2}$'
               example: 'US'                    
             hsCode:
               type: string
@@ -2464,3 +1337,368 @@ definitions:
                 contentCategory:
                   type: string
                   description: 'Identifies the DHLeCS dangerous goods category code. DHLeCS accepts two types of Dangerous Goods; these are Lithium batteries and ORM-D material which stands for other regulated materials for domestic transport only. While some sub-categories of Lithium batteries can be transported via DHLeCS expedited air network, ORM-D materials are only allowed for ground transportation. Please refer to our documentation site for a list valid values'
+  pickupRequest:
+    type: object
+    additionalProperties: false
+    required:
+      - pickupAccount
+      - packagingType
+      - readyBy
+      - pickupAddress
+    properties:
+      pickupAccount:
+        type: string
+        description: DHLeCS pickup account number. You will receive this after doing the onboarding with DHL sales
+        minLength: 1
+        maxLength: 30
+        pattern: '^[\S]+$'
+        example: '5351244'          
+      packagingType:
+        type: string
+        description: Specify the type of container used to consolidate your packages
+        enum:
+          - BOX
+          - GAYLORD
+          - SACK
+        example: 'SACK'
+      readyBy:
+        type: string
+        format: date-time        
+        minLength: 1
+        maxLength: 50        
+        description: If orders are prepared in advance, this field will denote the expected completion and available time when the items will be ready for pickup. Should be in one of the following formats - yyyy-MM-dd'T'HH:mm:ssZ or DD-MM-YYYY HH:MM or dd/MM/yyyy HH:mm.
+        example: '16-05-2020 13:00'      
+      merchantId:
+        type: string
+        description: Secondary identification often provided by marketplace
+        minLength: 0
+        maxLength: 30
+        example: 'test'
+      shipmentCount:
+        type: integer
+        format: int32
+        minimum: 0
+        maximum: 99
+        description: Total number of containers in a shipment
+        example: 1      
+      containerCount:
+        type: integer
+        format: int32
+        minimum: 0
+        maximum: 99
+        description: Sum of containers
+        example: 1
+      packageCount:
+        type: integer
+        format: int32
+        minimum: 0
+        maximum: 99
+        description: Sum of packages in each container
+        example: 1
+      value:
+        type: number
+        format: float
+        minimum: 0
+        maximum: 999999
+        description: Total value of the packages shipped. Required if currency is provided
+        example: 1
+      currency:
+        type: string
+        description: Three-letter ISO Currency code. Required if value is provided
+        minLength: 3
+        maxLength: 3
+        example: 'USD'
+      shipmentWeight:
+        type: number
+        format: float
+        minimum: 0
+        maximum: 9999
+        description: Total weight of all packages. Required if weightUom is provided
+      weightUom:
+        type: string
+        description: Weight unit of measure. G, KG, OZ, LB (case-insensitive, system normalizes to uppercase). Required if shipmentWeight provided
+        enum:
+          - LB
+          - OZ
+          - KG
+          - G
+        example: 'OZ'
+      specialInstructions: 
+        type: string
+        minLength: 0
+        maxLength: 255        
+        description: Pickup instructions given by consumer
+      pickupAddress:
+        type: object
+        additionalProperties: false
+        required:
+          - name
+          - address1
+          - city
+          - state
+          - postalCode
+          - country
+        description: Shipper or Pickup address object.
+        properties:
+          name:
+            type: string
+            description: Name of the shipper
+            minLength: 0
+            maxLength: 50
+            pattern: '^$|.*[^\s].*'
+            example: 'test'                
+          companyName:
+            type: string
+            description: Shipper or Pickup company name
+            minLength: 0
+            maxLength: 30
+            pattern: '^$|.*[^\s].*'
+            example: 'test'                
+          address1:
+            type: string
+            description: The pickup address where the shipment will be picked up for delivery
+            minLength: 1
+            maxLength: 60
+            pattern: '^$|.*[^\s].*'
+            example: 'test'                
+          address2:
+            type: string
+            description: The pickup address where the shipment will be picked up for delivery
+            minLength: 0
+            maxLength: 60
+            example: 'test'                
+          address3:
+            type: string
+            description: The pickup address where the shipment will be picked up for delivery
+            minLength: 0
+            maxLength: 30
+            example: 'test'                
+          city:
+            type: string
+            description: The pickup city where the shipment will be picked up for delivery
+            minLength: 1
+            maxLength: 40
+            pattern: '^$|.*[^\s].*'
+            example: 'test'                
+          state:
+            type: string
+            description: The pickup state where the shipment will be picked up for delivery
+            minLength: 2
+            maxLength: 2
+            pattern: '^[A-Z]{2}$'            
+            example: 'GA'                
+          postalCode:
+            type: string
+            description: The pickup postal code where the shipment will be picked up for delivery
+            minLength: 3
+            maxLength: 10
+            example: 'test'                
+          country:
+            type: string
+            description: The pickup country where the shipment will be picked up for delivery
+            minLength: 2
+            maxLength: 2
+            pattern: '^[A-Z]{2}$'
+            example: 'US'                              
+          phone:
+            type: string
+            description: The pickup contact number should there for any need to discuss pickup logistics
+            minLength: 0
+            maxLength: 20
+            example: 'test'            
+          email:
+            type: string
+            description: Return contact email address
+            minLength: 0
+            maxLength: 80
+            example: 'test'                
+  pickupPostResponse:
+    type: object
+    additionalProperties: false
+    properties:
+      shipmentIdentifier:
+        type: string
+        minLength: 20
+        maxLength: 50              
+        description: Generated by DHLeCS, present always and only in valid 200 responses
+      pickupAccount:
+        type: string
+        description: DHLeCS Pickup account number              
+      pickupTimeBegin:
+        type: string
+        format: date-time
+        description: Generated by DHLeCS, present always and only in responses; ISO-8601 date/time format
+      pickupTimeEnd:
+        type: string
+        format: date-time
+        description: Generated by DHLeCS, present always and only in responses; ISO-8601 date/time format
+      readyBy:
+        type: string
+        description: If orders are prepared in advance, this field will denote the expected completion and available time when the packages will be ready for pickup              
+      merchantId:
+        type: string
+        description: Secondary identification often provided by marketplace
+      packagingType:
+        type: string
+        description: Type of container used to consolidate your packages
+      shipmentCount:
+        type: integer
+        format: int32
+        description: Total number of containers in a shipment
+      containerCount:
+        type: integer
+        format: int32
+        description: Sum of containers
+      packageCount:
+        type: integer
+        format: int32
+        description: Sum of packages in each container
+      value:
+        type: number
+        format: float
+        description: Total value of the packages shipped. Required if currency is provided
+      currency:
+        type: string
+        description: Three-letter ISO Currency code. Required if value is provided
+      shipmentWeight:
+        type: number
+        format: float
+        description: Total weight of all packages. Required if weightUom is provided
+      weightUom:
+        type: string
+        description: Weight unit of measure. G, KG, OZ, LB (case-insensitive, system normalizes to uppercase). Required if shipmentWeight provided
+      specialInstructions: 
+        type: string
+        description: Pickup instructions given by consumer.
+      pickupAddress:
+        type: object
+        description: Shipper or Pickup address object.
+        properties:
+          name:
+            type: string
+            description: Name of the shipper
+          companyName:
+            type: string
+            description: Shipper or Pickup company name
+          address1:
+            type: string
+            description: The pickup address where the shipment will be picked up for delivery
+          address2:
+            type: string
+            description: The pickup address where the shipment will be picked up for delivery
+          address3:
+            type: string
+            description: The pickup address where the shipment will be picked up for delivery
+          city:
+            type: string
+            description: The pickup city where the shipment will be picked up for delivery
+          state:
+            type: string
+            description: The pickup state where the shipment will be picked up for delivery
+          postalCode:
+            type: string
+            description: The pickup postal code where the shipment will be picked up for delivery
+          country:
+            type: string
+            description: The pickup country where the shipment will be picked up for delivery            
+          phone:
+            type: string
+            description: The pickup contact number should there for any need to discuss pickup logistics
+          email:
+            type: string
+            description: Return contact email address            
+  pickupGetResponse:
+    type: object
+    additionalProperties: false
+    properties:
+      shipmentIdentifier:
+        type: string
+        minLength: 20
+        maxLength: 50              
+        description: Generated by DHLeCS, present always and only in valid 200 responses
+      pickupAccount:
+        type: string
+        description: DHLeCS Pickup account number          
+      pickupTimeBegin:
+        type: string
+        format: date-time
+        description: Generated by DHLeCS, present always and only in responses; ISO-8601 date/time format
+      pickupTimeEnd:
+        type: string
+        format: date-time
+        description: Generated by DHLeCS, present always and only in responses; ISO-8601 date/time format
+      readyBy:
+        type: string
+        description: If orders are prepared in advance, this field will denote the expected completion and available time when the packages will be ready for pickup          
+      merchantId:
+        type: string
+        description: Secondary identification often provided by marketplace
+      packagingType:
+        type: string
+        description: Type of container used to consolidate your packages
+      shipmentCount:
+        type: integer
+        format: int32
+        description: Total number of containers in a shipment
+      containerCount:
+        type: integer
+        format: int32
+        description: Sum of containers        
+      packageCount:
+        type: integer
+        format: int32
+        description: Sum of packages in each container
+      value:
+        type: number
+        format: float
+        description: Total value of the packages shipped. Required if currency is provided
+      currency:
+        type: string
+        description: Three-letter ISO Currency code. Required if value is provided
+      shipmentWeight:
+        type: number
+        format: float
+        description: Total weight of all packages. Required if weightUom is provided
+      weightUom:
+        type: string
+        description: Weight unit of measure. G, KG, OZ, LB (case-insensitive, system normalizes to uppercase). Required if shipmentWeight provided
+      specialInstructions: 
+        type: string
+        description: Pickup instructions given by consumer.
+      pickupAddress:
+        type: object
+        description: Shipper or Pickup address object.
+        properties:
+          name:
+            type: string
+            description: Name of the shipper
+          companyName:
+            type: string
+            description: Shipper or Pickup company name
+          address1:
+            type: string
+            description: The pickup address where the shipment will be picked up for delivery
+          address2:
+            type: string
+            description: The pickup address where the shipment will be picked up for delivery
+          address3:
+            type: string
+            description: The pickup address where the shipment will be picked up for delivery
+          city:
+            type: string
+            description: The pickup city where the shipment will be picked up for delivery
+          state:
+            type: string
+            description: The pickup state where the shipment will be picked up for delivery
+          postalCode:
+            type: string
+            description: The pickup postal code where the shipment will be picked up for delivery
+          country:
+            type: string
+            description: The pickup country where the shipment will be picked up for delivery            
+          phone:
+            type: string
+            description: The pickup contact number should there for any need to discuss pickup logistics
+          email:
+            type: string
+            description: Return contact email address
