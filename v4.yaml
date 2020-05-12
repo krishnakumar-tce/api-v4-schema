@@ -1,6 +1,6 @@
 swagger: '2.0'
 info:
-  description: 'DHL eCommerce Solutions (DHLeCS) [API services](https://api-sandbox.dhlecs.com/docs) are used to create, manifest, and track packages for domestic and international destinations.'
+  description: 'DHL eCommerce Solutions (DHLeCS) [API services](https://api-bat.dhlecs.com/docs) are used to create, manifest, and track packages for domestic and international destinations.'
   version: 4.0.0
   title: DHL eCommerce Solutions API Services
   termsOfService: ''
@@ -10,7 +10,7 @@ info:
 externalDocs:
   description: Find out more about DHLeCS
   url: 'https://www.logistics.dhl/us-en/home/our-divisions/ecommerce.html'
-host: api-sandbox.dhlecs.com
+host: api-bat.dhlecs.com
 basePath: /
 schemes:
   - https
@@ -19,7 +19,7 @@ securityDefinitions:
     type: oauth2
     description: OAuth2 secured area for tokens from Apigee.
     flow: application
-    tokenUrl: https://api-sandbox.dhlecs.com/auth/v4/accesstoken
+    tokenUrl: https://api-bat.dhlecs.com/auth/v4/accesstoken
 security:
   - oAuthSecurity: []
 tags: 
