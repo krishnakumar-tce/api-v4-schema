@@ -1,6 +1,6 @@
 swagger: '2.0'
 info:
-  description: 'DHL eCommerce Solutions (DHLeCS) [API services](https://api-bat.dhlecs.com/docs) are used to create, manifest, track, and schedule transportation for domestic and international destined packages.'
+  description: 'DHL eCommerce Solutions (DHLeCS) [API services](https://api-sandbox.dhlecs.com/docs) are used to create, manifest, track, and schedule transportation for domestic and international destined packages.'
   version: 4.0.0
   title: DHL eCommerce Solutions API Services
   termsOfService: ''
@@ -10,7 +10,7 @@ info:
 externalDocs:
   description: Find out more about DHLeCS
   url: 'https://www.logistics.dhl/us-en/home/our-divisions/ecommerce.html'
-host: api-bat.dhlecs.com
+host: api-sandbox.dhlecs.com
 basePath: /
 schemes:
   - https
@@ -19,7 +19,7 @@ securityDefinitions:
     type: oauth2
     description: OAuth2 secured area for tokens from Apigee.
     flow: application
-    tokenUrl: https://api-bat.dhlecs.com/auth/v4/accesstoken
+    tokenUrl: https://api-sandbox.dhlecs.com/auth/v4/accesstoken
 security:
   - oAuthSecurity: []
 tags: 
@@ -37,7 +37,7 @@ paths:
       tags:
         - label
       summary: Create a label
-      description: 'Create domestic and international labels in multiple formats: [ Label Services ](https://api-bat.dhlecs.com/docs/label)'
+      description: 'Create domestic and international labels in multiple formats: [ Label Services ](https://api-sandbox.dhlecs.com/docs/label)'
       operationId: createLabel
       consumes:
         - application/json
@@ -70,7 +70,7 @@ paths:
       tags:
         - label
       summary: Get a label
-      description: 'Retrieve a previously created label: [ Label Services ](https://api-bat.dhlecs.com/docs/label)'
+      description: 'Retrieve a previously created label: [ Label Services ](https://api-sandbox.dhlecs.com/docs/label)'
       operationId: getLabel
       produces:
         - application/json
@@ -108,7 +108,7 @@ paths:
       tags:
         - manifest
       summary: Create a manifest
-      description: 'Manifest selected packages or all packages: [ Manifest Services ](https://api-bat.dhlecs.com/docs/manifest)'
+      description: 'Manifest selected packages or all packages: [ Manifest Services ](https://api-sandbox.dhlecs.com/docs/manifest)'
       operationId: createManifest
       consumes:
         - application/json
@@ -133,7 +133,7 @@ paths:
       tags:
         - manifest
       summary: Get a manifest document
-      description: 'Retrieve manifest document(s) that can be handed over at the time of pickup or drop-off: [ Manifest Services ](https://api-bat.dhlecs.com/docs/manifest)'
+      description: 'Retrieve manifest document(s) that can be handed over at the time of pickup or drop-off: [ Manifest Services ](https://api-sandbox.dhlecs.com/docs/manifest)'
       operationId: getManifest
       produces:
         - application/json
@@ -164,7 +164,7 @@ paths:
       tags:
         - tracking
       summary: Get tracking data for a package
-      description: 'Get tracking data for a package: [ Tracking Services ](https://api-bat.dhlecs.com/docs/tracking)'
+      description: 'Get tracking data for a package: [ Tracking Services ](https://api-sandbox.dhlecs.com/docs/tracking)'
       operationId: getPackage
       produces:
         - application/json
@@ -245,7 +245,7 @@ paths:
       tags:
         - pickup
       summary: Create a transportation pickup request 
-      description: 'Create a Transportation Pickup request: [ Transportation Services ](https://api-bat.dhlecs.com/docs/transportation)'
+      description: 'Create a Transportation Pickup request: [ Transportation Services ](https://api-sandbox.dhlecs.com/docs/transportation)'
       operationId: createPickup
       consumes:
         - application/json
@@ -270,7 +270,7 @@ paths:
       tags:
         - pickup
       summary: Get a transportation pickup request
-      description: 'Retrieve Transportation Pickup details [ Transportation Services ](https://api-bat.dhlecs.com/docs/transportation)'
+      description: 'Retrieve Transportation Pickup details [ Transportation Services ](https://api-sandbox.dhlecs.com/docs/transportation)'
       operationId: getPickup
       produces:
         - application/json
@@ -293,7 +293,7 @@ paths:
       tags:
         - pickup
       summary: Delete a transportation pickup request
-      description: 'Delete a previously scheduled pickup request [ Transportation Services ](https://api-bat.dhlecs.com/docs/transportation)'
+      description: 'Delete a previously scheduled pickup request [ Transportation Services ](https://api-sandbox.dhlecs.com/docs/transportation)'
       operationId: deletePickup
       produces:
         - application/json
@@ -1483,7 +1483,7 @@ definitions:
             minLength: 1
             maxLength: 40
             pattern: '^$|.*[^\s].*'
-            example: 'Norcross'                
+            example: 'test'                
           state:
             type: string
             description: The pickup state where the shipment will be picked up for delivery
@@ -1496,7 +1496,7 @@ definitions:
             description: The pickup postal code where the shipment will be picked up for delivery
             minLength: 3
             maxLength: 10
-            example: '90020'                
+            example: '30006'                
           country:
             type: string
             description: The pickup country where the shipment will be picked up for delivery
