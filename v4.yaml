@@ -1,6 +1,6 @@
 swagger: '2.0'
 info:
-  description: 'DHL eCommerce Solutions (DHLeCS) [API services](https://api-bat.dhlecs.com/docs) are used to create, manifest, and track packages for domestic and international destinations.'
+  description: 'DHL eCommerce Solutions (DHLeCS) [API services](https://api-sandbox.dhlecs.com/docs) are used to create, manifest, track, and schedule transportation for domestic and international destined packages.'
   version: 4.0.0
   title: DHL eCommerce Solutions API Services
   termsOfService: ''
@@ -10,7 +10,7 @@ info:
 externalDocs:
   description: Find out more about DHLeCS
   url: 'https://www.logistics.dhl/us-en/home/our-divisions/ecommerce.html'
-host: api-bat.dhlecs.com
+host: api-sandbox.dhlecs.com
 basePath: /
 schemes:
   - https
@@ -19,7 +19,7 @@ securityDefinitions:
     type: oauth2
     description: OAuth2 secured area for tokens from Apigee.
     flow: application
-    tokenUrl: https://api-bat.dhlecs.com/auth/v4/accesstoken
+    tokenUrl: https://api-sandbox.dhlecs.com/auth/v4/accesstoken
 security:
   - oAuthSecurity: []
 tags: 
@@ -28,7 +28,9 @@ tags:
   - name: manifest 
     description: Create and retrieve manifests
   - name: tracking 
-    description: track packages within the DHLeCS network
+    description: Track packages within the DHLeCS network
+  - name: pickup
+    description: Create and retrieve transportation pickup requests
 paths:  
   '/shipping/v4/label':
     post:
@@ -242,7 +244,7 @@ paths:
     post:
       tags:
         - pickup
-      summary: Create a Pickup label 
+      summary: Create a transportation pickup request 
       description: 'Create a Transportation Pickup request: [ Transportation Services ](https://api-sandbox.dhlecs.com/docs/transportation)'
       operationId: createPickup
       consumes:
@@ -260,14 +262,14 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/pickupPostResponse'
+            $ref: '#/definitions/pickupResponse'
         '400':
           description: Invalid input  
   '/transportation/v4/pickups/{shipmentIdentifier}':
     get:
       tags:
         - pickup
-      summary: Get Transportation Pickup request
+      summary: Get a transportation pickup request
       description: 'Retrieve Transportation Pickup details [ Transportation Services ](https://api-sandbox.dhlecs.com/docs/transportation)'
       operationId: getPickup
       produces:
@@ -284,13 +286,13 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/pickupGetResponse'
+            $ref: '#/definitions/pickupResponse'
         '400':
           description: Invalid input
     delete:
       tags:
         - pickup
-      summary: Delete a pickup request
+      summary: Delete a transportation pickup request
       description: 'Delete a previously scheduled pickup request [ Transportation Services ](https://api-sandbox.dhlecs.com/docs/transportation)'
       operationId: deletePickup
       produces:
@@ -1367,7 +1369,7 @@ definitions:
         minLength: 1
         maxLength: 50        
         description: If orders are prepared in advance, this field will denote the expected completion and available time when the items will be ready for pickup. Should be in one of the following formats - yyyy-MM-dd'T'HH:mm:ssZ or DD-MM-YYYY HH:MM or dd/MM/yyyy HH:mm.
-        example: '16-05-2020 13:00'      
+        example: '31-12-2020 13:00'      
       merchantId:
         type: string
         description: Secondary identification often provided by marketplace
@@ -1414,6 +1416,7 @@ definitions:
         minimum: 0
         maximum: 9999
         description: Total weight of all packages. Required if weightUom is provided
+        example: 1
       weightUom:
         type: string
         description: Weight unit of measure. G, KG, OZ, LB (case-insensitive, system normalizes to uppercase). Required if shipmentWeight provided
@@ -1422,12 +1425,13 @@ definitions:
           - OZ
           - KG
           - G
-        example: 'OZ'
+        example: 'LB'
       specialInstructions: 
         type: string
         minLength: 0
         maxLength: 255        
         description: Pickup instructions given by consumer
+        example: 'test'
       pickupAddress:
         type: object
         additionalProperties: false
@@ -1492,7 +1496,7 @@ definitions:
             description: The pickup postal code where the shipment will be picked up for delivery
             minLength: 3
             maxLength: 10
-            example: 'test'                
+            example: '30006'                
           country:
             type: string
             description: The pickup country where the shipment will be picked up for delivery
@@ -1505,14 +1509,14 @@ definitions:
             description: The pickup contact number should there for any need to discuss pickup logistics
             minLength: 0
             maxLength: 20
-            example: 'test'            
+            example: '555-555-5555'            
           email:
             type: string
             description: Return contact email address
             minLength: 0
             maxLength: 80
-            example: 'test'                
-  pickupPostResponse:
+            example: 'test@test.com'                
+  pickupResponse:
     type: object
     additionalProperties: false
     properties:
@@ -1549,101 +1553,6 @@ definitions:
         type: integer
         format: int32
         description: Sum of containers
-      packageCount:
-        type: integer
-        format: int32
-        description: Sum of packages in each container
-      value:
-        type: number
-        format: float
-        description: Total value of the packages shipped. Required if currency is provided
-      currency:
-        type: string
-        description: Three-letter ISO Currency code. Required if value is provided
-      shipmentWeight:
-        type: number
-        format: float
-        description: Total weight of all packages. Required if weightUom is provided
-      weightUom:
-        type: string
-        description: Weight unit of measure. G, KG, OZ, LB (case-insensitive, system normalizes to uppercase). Required if shipmentWeight provided
-      specialInstructions: 
-        type: string
-        description: Pickup instructions given by consumer.
-      pickupAddress:
-        type: object
-        description: Shipper or Pickup address object.
-        properties:
-          name:
-            type: string
-            description: Name of the shipper
-          companyName:
-            type: string
-            description: Shipper or Pickup company name
-          address1:
-            type: string
-            description: The pickup address where the shipment will be picked up for delivery
-          address2:
-            type: string
-            description: The pickup address where the shipment will be picked up for delivery
-          address3:
-            type: string
-            description: The pickup address where the shipment will be picked up for delivery
-          city:
-            type: string
-            description: The pickup city where the shipment will be picked up for delivery
-          state:
-            type: string
-            description: The pickup state where the shipment will be picked up for delivery
-          postalCode:
-            type: string
-            description: The pickup postal code where the shipment will be picked up for delivery
-          country:
-            type: string
-            description: The pickup country where the shipment will be picked up for delivery            
-          phone:
-            type: string
-            description: The pickup contact number should there for any need to discuss pickup logistics
-          email:
-            type: string
-            description: Return contact email address            
-  pickupGetResponse:
-    type: object
-    additionalProperties: false
-    properties:
-      shipmentIdentifier:
-        type: string
-        minLength: 20
-        maxLength: 50              
-        description: Generated by DHLeCS, present always and only in valid 200 responses
-      pickupAccount:
-        type: string
-        description: DHLeCS Pickup account number          
-      pickupTimeBegin:
-        type: string
-        format: date-time
-        description: Generated by DHLeCS, present always and only in responses; ISO-8601 date/time format
-      pickupTimeEnd:
-        type: string
-        format: date-time
-        description: Generated by DHLeCS, present always and only in responses; ISO-8601 date/time format
-      readyBy:
-        type: string
-        description: If orders are prepared in advance, this field will denote the expected completion and available time when the packages will be ready for pickup          
-      merchantId:
-        type: string
-        description: Secondary identification often provided by marketplace
-      packagingType:
-        type: string
-        description: Type of container used to consolidate your packages
-      shipmentCount:
-        type: integer
-        format: int32
-        description: Total number of containers in a shipment
-      containerCount:
-        type: integer
-        format: int32
-        description: Sum of containers        
       packageCount:
         type: integer
         format: int32
