@@ -1483,7 +1483,7 @@ definitions:
             minLength: 1
             maxLength: 40
             pattern: '^$|.*[^\s].*'
-            example: 'test'                
+            example: 'Valencia'                
           state:
             type: string
             description: The pickup state where the shipment will be picked up for delivery
@@ -1496,7 +1496,7 @@ definitions:
             description: The pickup postal code where the shipment will be picked up for delivery
             minLength: 3
             maxLength: 10
-            example: '30006'                
+            example: '90020'                
           country:
             type: string
             description: The pickup country where the shipment will be picked up for delivery
